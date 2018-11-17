@@ -1,0 +1,82 @@
+<section id="router">
+
+    <section>
+        <h2>Routeur</h2>
+    </section>
+
+    <section>
+        <h3>Présentation</h3>
+        <img src="assets/images/router.png" alt="Routeur">
+    </section>
+
+    <section>
+        <h3>Où écrire ses routes ?</h3>
+        <p>Une fois de plus, Symfony propose 4 méthodes pour écrire des routes :</p>
+        <ol>
+            <li>Annotations (recommandé)</li>
+            <li>YAML</li>
+            <li>XML</li>
+            <li>PHP</li>
+        </ol>
+        <p>Les routes sont définies dans le fichier routing.yml</p>
+        <p>Avec les annotations, il est possible de définir une route sur l’ensemble d’un controller puis des sous-routes sur ses actions.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/routing.html" target="_blank" class="info">Routing annotations</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Ecrire les routes</h3>
+        <p>Route simple :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test", name="page_test")
+ */
+public function testAction()</code></pre>
+        <p>Route avec paramètres :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test/{title}/{username}", name="page_test", defaults={"username": "Utilisateur"})
+ */
+public function testAction($title, $username)</code></pre>
+    </section>
+
+    <section>
+        <h3>Ecrire les routes</h3>
+        <p>Route avec contraintes :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test/{_locale}/{year}", name="page_test", requirements={“_locale”: “en|fr”, “year”: “\d+”})
+ */
+public function testAction($_locale, $year)</code></pre>
+        <p>Route avec contraintes sur le méthode :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test, name="page_test")
+ * @Method({"GET", "POST"})
+ */
+public function testAction()</code></pre>
+    </section>
+
+    <section>
+        <h3>Paramètres réservés</h3>
+        <p>Certains paramètres dans les routes sont réservés :</p>
+        <ul>
+            <li><strong>_controller</strong> : Permet de définir quel controller sera exécuté</li>
+            <li><strong>_format</strong> : Permet de définir le format de la requête (peut être utilisé pour retourner un résultat au format html ou json)</li>
+            <li><strong>_fragment</strong> : Permet de définir l’identificateur de fragment (après le symbole “#” dans une URL</li>
+            <li><strong>_locale</strong> : Permet de définir la langue</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>ParamConverter</h3>
+        <p>L’objet ParamConverter permet de convertir un paramètre.</p>
+        <p>Il permet notamment de convertir un “id” en entité sans avoir besoin de faire manuellement la requête avec l’ORM.</p>
+        <pre><code class="language-php">/**
+ * @Route("/book/{id}")
+ * @ParamConverter("book", class="AppBundle:Book")
+ */
+public function showAction(Book $book)</code></pre>
+        <footer>
+            <a href="#" class="info">Symfony peut faire la conversion automatiquement</a>
+        </footer>
+    </section>
+
+</section>

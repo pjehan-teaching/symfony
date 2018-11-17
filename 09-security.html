@@ -1,0 +1,254 @@
+<section id="security">
+
+    <section>
+        <h2>Sécurité</h2>
+    </section>
+
+    <section>
+        <h3>Authentification / Autorisation</h3>
+        <p>L’<strong>authentification</strong> est le processus permettant à un utilisateur de <strong>s’authentifier / se logger</strong> sur une plateforme.</p>
+        <p>L’<strong>autorisation</strong> est une étape <strong>suivant l’authentification</strong> et permettant de vérifier les <strong>droits accordés</strong> à l’utilisateur.</p>
+        <div class="container">
+            <div class="col">
+                <img src="assets/images/authentification.png" alt="Authentification">
+            </div>
+            <div class="col">
+                <img src="assets/images/authorization.png" alt="Autorisation">
+            </div>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/security.html" target="_blank" class="info">Securité</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Installation avec Flex</h3>
+        <p>Nous allons commencer par installer le composant de sécurité en utilisant la commande flex suivante :</p>
+        <pre><code class="language-bash">composer require security</code></pre>
+        <p>Cette commande va importer le bundle SecurityBundle et créer automatiquement un fichier config/packages/security.yaml</p>
+    </section>
+
+    <section>
+        <h3>Créer une entité User</h3>
+        <p>Créer une entité User qui implémente les interfaces UserInterface et Serializable ayant au minimum les champs suivants : id, username, password, email.</p>
+        <pre><code class="language-php">class User implements UserInterface, \Serializable {
+	[...]
+}
+</code></pre>
+        <p>Mettez ensuite à jour votre base de données :</p>
+        <pre><code class="language-bash">php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/security/entity_provider.html" target="_blank" class="info">Entity Provider</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Modifier les Fixtures (si nécessaire)</h3>
+        <p>Modifier les fixtures pour utiliser le service password_encoder pour générer les mots de passe :</p>
+        <pre><code class="language-php">private $encoder;
+
+public function __construct(UserPasswordEncoderInterface $encoder)
+{
+   $this->encoder = $encoder;
+}
+
+$encodedPassword = $this->encoder->encodePassword($admin, 'admin');
+$admin->setPassword($encodedPassword);</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <p>Définir une méthode de cryptage des mots de passe :</p>
+        <pre><code class="language-yaml">    encoders:
+        AppBundle\Entity\User: bcrypt</code></pre>
+        <p>Définir un provider (memory, entity, ldap ou chain) :</p>
+        <pre><code class="language-yaml">    providers:
+        booklib_provider:
+            entity:
+                class: AppBundle:User
+                property: username</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <p>Définir les paramètres principaux de sécurité :</p>
+        <pre><code class="language-yaml">security:
+    firewalls:
+        main:
+            pattern:    ^/
+            anonymous: true
+            provider: booklib_provider</code></pre>
+        <p>Définir un espace sécurisé :</p>
+        <pre><code class="language-yaml">security:
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }</code></pre>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>Pour gérer la connexion des utilisateurs, ajouter l’option suivante dans le fichier security.yml :</p>
+        <pre><code class="language-yaml">security:
+    firewalls:
+        main:
+            form_login:
+                login_path: login
+                check_path: login</code></pre>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>Pour gérer la session des utilisateurs, ajouter l’option suivante dans le fichier framework.yml :</p>
+        <pre><code class="language-yaml">framework:
+    session:
+        handler_id: ~</code></pre>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>Créer un nouveau Controller SecurityController :</p>
+        <pre><code class="language-php">public function loginAction(Request $request, AuthenticationUtils $authUtils) {
+    $error = $authUtils->getLastAuthenticationError();
+
+    $lastUsername = $authUtils->getLastUsername();
+
+    return $this->render('security/login.html.twig', array(
+        'last_username' => $lastUsername,
+        'error'         => $error,
+    ));
+}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/security/form_login_setup.html" target="_blank" class="info">Login Setup</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>Créer le template Twig correspondant :</p>
+        <pre><code class="language-php">{% if error %}
+    &lt;div&gt;{{ error.messageKey|trans(error.messageData, 'security') }}&lt;/div&gt;
+{% endif %}
+&lt;form action="{{ path('login') }}" method="post"&gt;
+    &lt;label for="username"&gt;Username:&lt;/label&gt;
+    &lt;input type="text" id="username" name="_username" value="{{ last_username }}" /&gt;
+
+    &lt;label for="password"&gt;Password:&lt;/label&gt;
+    &lt;input type="password" id="password" name="_password" /&gt;
+
+    &lt;button type="submit"&gt;login&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/security/form_login_setup.html" target="_blank" class="info">Login Setup</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Logout</h3>
+        <p>Pour gérer la déconnexion des utilisateurs, ajouter l’option suivante dans le fichier security.yml :</p>
+        <pre><code class="language-yaml">security:
+    firewalls:
+        main:
+            logout:
+                path:       /logout
+                target:     /</code></pre>
+        <p>Ajouter également la route suivante dans le fichier routing.yml :</p>
+        <pre><code class="language-yaml">logout:
+    path: /logout</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/security.html#logging-out" target="_blank" class="info">Logging Out</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Register</h3>
+        <p>Pour gérer l’enregistrement des nouveaux utilisateurs, ajouter une propriété plainPassword dans l’entité User (cette propriété ne sera pas persistée en base de données) et générer les accesseurs (get / set) :</p>
+        <pre><code class="language-php">/**
+ * @Assert\NotBlank()
+ * @Assert\Length(max=4096)
+*/
+private $plainPassword;</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Register</h3>
+        <p>Créer ensuite un formulaire pour l’entité User :</p>
+        <pre><code class="language-php">$builder
+    ->add('email', EmailType::class)
+    ->add('username', TextType::class)
+    ->add('plainPassword', RepeatedType::class, array(
+        'type' => PasswordType::class,
+        'first_options'  => array('label' => 'Password'),
+        'second_options' => array('label' => 'Repeat Password'),
+    ))
+;</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Register</h3>
+        <p>Créer ensuite un controller RegistrationController avec l’action register :</p>
+        <pre style="max-height: 500px;"><code class="language-php">/**
+ * @Route("/register", name="user_registration")
+ */
+public function registerAction(Request $request) {
+    $user = new User();
+    $form = $this->createForm(UserType::class, $user);
+
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPlainPassword());
+        $user->setPassword($password);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('homepage');
+    }
+
+    return $this->render('registration/register.html.twig', array('form' => $form->createView()));
+}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Register</h3>
+        <p>Enfin, créer la vue dans le fichier register.html.twig :</p>
+        <pre style="max-height: 500px;"><code class="language-php">{{ form_start(form) }}
+    {{ form_row(form.username) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.plainPassword.first) }}
+    {{ form_row(form.plainPassword.second) }}
+
+    <button type="submit">Register!</button>
+{{ form_end(form) }}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Sécuriser un controller</h3>
+        <p>Il est possible de définir des règles de sécurités sur un controller :</p>
+        <pre><code class="language-php">/**
+ * @Security("has_role('ROLE_ADMIN')")
+ */
+public function deleteAction($id)</code></pre>
+        <p>Ou bien plus spécifiquement à l’intérieur d’un controller :</p>
+        <pre><code class="language-php">public function helloAction($name) {
+    $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
+}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/security.html" target="_blank" class="info">Security Annotations</a>
+        </footer>
+    </section>
+
+</section>

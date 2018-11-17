@@ -1,0 +1,283 @@
+<section id="model">
+
+    <section>
+        <h2>Le modèle</h2>
+    </section>
+
+    <section>
+        <h3>L'ORM : Doctrine</h3>
+        <div class="container">
+            <div class="col" style="flex: 2;">
+                <p>Symfony recommande l’utilisation de l’ORM (Object-Relational Mapping) Doctrine 2.</p>
+                <p>Ce dernier sera en charge de toute la partie “Model” de notre application (génération des entités, persistance des données, requêtes...).</p>
+            </div>
+            <div class="col">
+                <img src="assets/images/doctrine.png" alt="Doctrine">
+            </div>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine.html" target="_blank" class="info">Symfony Doctrine</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <pre><code class="language-bash">composer require doctrine
+php bin/console list doctrine
+</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <ul>
+            <li>.env : Définir les paramètres de connexion à la BDD</li>
+            <li>config/packages/doctrine.yml : Configuration du driver</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Création</h3>
+        <p>Database first vs Model first vs Code first</p>
+        <p>Il existe plusieurs approches pour gérer la partie “Model” d’une application :</p>
+        <ul>
+            <li>Database First : BDD → Model → Entités</li>
+            <li>Model First : Model → Code → BDD</li>
+            <li>Code First : Code → Model → BDD</li>
+        </ul>
+        <p>Dans Symfony, le Model et le Code sont fortement liés, surtout avec l’utilisation des annotations.</p>
+    </section>
+
+    <section>
+        <h3>Database First</h3>
+        <p>Génération du mapping à partir de la BDD :</p>
+        <pre><code class="language-bash">php bin/console doctrine:mapping:import --force AppBundle xml</code></pre>
+        <p>Conversion du mapping en annotations et génération des entités :</p>
+        <pre><code class="language-bash">php bin/console doctrine:mapping:convert annotation ./src
+php bin/console doctrine:generate:entities AppBundle</code></pre>
+        <p><strong>ATTENTION !</strong> : Doctrine est capable de générer environ 70% / 80% du code. Il ne peut pas gérer les associations inversées, l’héritage, les suppressions en cascade...</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/reverse_engineering.html" target="_blank" class="info">Reverse Engineering</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Code First</h3>
+        <p>Création d’une nouvelle entité :</p>
+        <pre><code class="language-bash">php bin/console make:entity Product</code></pre>
+        <ul>
+            <li>Génération des accesseurs (getter / setter)</li>
+            <li>Génération de la classe Repository</li>
+            <li>Génération du constructeur</li>
+        </ul>
+        <pre><code class="language-bash">php bin/console doctrine:generate:entities AppBundle</code></pre>
+    </section>
+
+    <section>
+        <h3>Code First</h3>
+        <p>Génération de la base de données :</p>
+        <pre><code class="language-bash">php bin/console doctrine:migrations:diff</code></pre>
+        <p>Mise à jour de la base de données :</p>
+        <pre><code class="language-bash">php bin/console doctrine:migrations:migrate</code></pre>
+    </section>
+
+    <section>
+        <h3>Créer les associations</h3>
+        <p>Que l’on utilise la méthode Database First ou Code First, il est toujours nécessaire d’écrire les associations à la main.</p>
+        <p>Une page de la <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/association-mapping.html" target="_blank">documentation</a> de Doctrine répertorie les différents types d’associations disponibles.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine/associations.html" target="_blank" class="info">Associations</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>One-To-Many</h3>
+        <div class="container">
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
+
+/** @Entity */
+class Product
+{
+    /**
+     * One Product has Many Features.
+     * @OneToMany(targetEntity="Feature", mappedBy="product")
+     */
+    private $features;
+
+    public function __construct() {
+        $this->features = new ArrayCollection();
+    }
+}</code></pre>
+            </div>
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">/** @Entity */
+class Feature
+{
+    /**
+     * Many Features have One Product.
+     * @ManyToOne(targetEntity="Product", inversedBy="features")
+     * @JoinColumn(name="product_id", referencedColumnName="id")
+     */
+    private $product;
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Many-To-Many</h3>
+        <div class="container">
+            <div class="col" style="max-width: 450px;">
+                <h4>Owning side</h4>
+                <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
+
+/** @Entity */
+class User
+{
+    /**
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="Group", inversedBy="users")
+     * @JoinTable(name="users_groups")
+     */
+    private $groups;
+
+    public function __construct() {
+        $this->groups = new ArrayCollection();
+    }
+}</code></pre>
+            </div>
+            <div class="col" style="max-width: 450px;">
+                <h4>Inverse side</h4>
+                <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
+
+/** @Entity */
+class Group
+{
+    /**
+     * Many Groups have Many Users.
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
+    private $users;
+
+    public function __construct() {
+        $this->users = new ArrayCollection();
+    }
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Renseigner les dates de création / MàJ</h3>
+        <p>Dans une base de données, il est souvent nécessaire d’enregistrer les dates de création ou de mise à jour d’une entité.</p>
+        <p>Doctrine déclenche automatiquement des événements lorsqu’une action est effectuée sur une entité. La liste de ces actions est disponible dans la <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events" target="_blank">documentation</a> de Doctrine.</p>
+    </section>
+
+    <section>
+        <h3>Ajouter</h3>
+        <p>Code à ajouter dans un Controlleur :</p>
+        <pre><code class="language-php">// Récupérer l’Entity Manager de Doctrine
+$em = $this->getDoctrine()->getManager();
+
+// Création d’un nouveau produit
+$product = new Product();
+$product->setName('Keyboard');
+
+// Ajouter l’objet dans l’Entity Manager
+$em->persist($product);
+
+// Execution des requêtes SQL
+$em->flush();</code></pre>
+    </section>
+
+    <section>
+        <h3>Modifier</h3>
+        <p>Code à ajouter dans un Controlleur :</p>
+        <pre><code class="language-php">// Récupérer le Repository de l'entité
+$repository = $this->getDoctrine()->getRepository(Product::class);
+
+// Récupérer le produit id = 3
+$product = $repository->find(3);
+
+// Modification du produit
+$product->setName('Monitor');
+
+// Execution des requêtes SQL
+$em->flush();</code></pre>
+    </section>
+
+    <section>
+        <h3>Supprimer</h3>
+        <p>Code à ajouter dans un Controlleur :</p>
+        <pre><code class="language-php">// Récupérer le Repository de l'entité
+$repository = $this->getDoctrine()->getRepository(Product::class);
+
+// Récupérer le produit id = 3
+$product = $repository->find(3);
+
+// Suppression du produit
+$em->remove($product);
+
+// Execution des requêtes SQL
+$em->flush();</code></pre>
+    </section>
+
+    <section>
+        <h3>Insérer les données initiales</h3>
+        <p>Pour développer notre application, nous aurons besoin de <strong>créer des données de tests</strong>.</p>
+        <p>Pour cela, nous allons utiliser le bundle <strong>DoctrineFixturesBundle</strong></p>
+        <footer>
+            <a href="https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html" target="_blank" class="info">DoctrineFixturesBundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Rechercher des données</h3>
+        <p>Doctrine met à disposition des méthodes permettant de récupérer des données de la base de données sans écrire de requête :</p>
+        <ul>
+            <li>find()</li>
+            <li>findAll()</li>
+            <li>findBy()</li>
+            <li>findOneBy()</li>
+        </ul>
+        <p>Il existe également des méthodes dynamiques comme par exemple findOneByName(), findByPrice()...</p>
+    </section>
+
+    <section>
+        <h3>DQL et QueryBuilder</h3>
+        <div class="container">
+            <div class="col">
+                <h4>DQL</h4>
+                <pre><code class="language-php">$this->getEntityManager()
+            ->createQuery('
+                SELECT p
+                FROM AppBundle:Post p
+                WHERE p.publishedAt <= :now
+                ORDER BY p.publishedAt DESC
+            ')
+            ->setParameter('now', new \DateTime());</code></pre>
+            </div>
+            <div class="col">
+                <h4>QueryBuilder</h4>
+                <pre><code class="language-php">$qb = $this->getEntityManager()->createQueryBuilder();
+
+
+$qb->select('p')
+    ->from('AppBundle:Post', 'p')
+    ->where($qb->expr()->lte('p.publishedAt', ':now'))
+    ->orderBy('p.publishedAt', 'DESC');
+    ->setParameter('now', new \DateTime());</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Custom Repository</h3>
+        <p>Pour créer des requêtes plus complexes, nous pouvons créer des Custom Repositories.</p>
+        <p>Un Custom Repository est une classe PHP qui nous permettra de stocker toutes les requêtes relatives à une entité et qui ne sont pas auto-générées par Doctrine (find, findAll, findBy…).</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/doctrine.html#querying-for-objects-the-repository" target="_blank" class="info">The Repository</a>
+        </footer>
+    </section>
+
+</section>

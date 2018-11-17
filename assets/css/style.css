@@ -1,0 +1,13 @@
+.reveal img.logo {
+    box-sizing: border-box;
+    max-height: 200px;
+    max-width: 100%;
+    background-color: white;
+    padding: 1em;
+}
+
+.reveal section ul,
+.reveal section ol {
+    display: block;
+    margin-bottom: 1em;
+}

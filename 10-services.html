@@ -1,0 +1,63 @@
+<section id="services">
+
+    <section>
+        <h2>Services</h2>
+    </section>
+
+    <section>
+        <h3>Création d’un service</h3>
+        <ul>
+            <li>Un service permet de <strong>simplifier</strong> l’utilisation de certaines classes ayant pour but de réaliser une <strong>fonction particulière</strong>.</li>
+            <li>Symfony utilise un <strong>conteneur de services</strong> (service container) afin de gérer l’organisation, l’instanciation et la gestion des dépendances des différents services existant.</li>
+            <li>L’ensemble des services de notre application seront listés dans le fichier <strong>services.yml</strong></li>
+            <li>On parle de <strong>programmation orientée services</strong></li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Déclarer un service</h3>
+        <pre class="code language-yaml">services:
+    app.my_service
+        class: AppBundle\Utils\MyService
+        arguments: ['%my_parameter%', '@app.other_service']
+        calls:
+            - method: setOtherService
+              arguments:
+                  - '@app.other_service'</pre>
+    </section>
+
+    <section>
+        <h3>Exemple : Générer des slugs</h3>
+        <p>Créer une nouvelle classe Slugger dans le dossier Utils de votre Application :</p>
+        <pre><code class="language-php">namespace App\Utils;
+
+class Slugger {
+    public function slugify($string) {
+        return preg_replace('/[^a-z0-9]/', '-', strtolower(trim(strip_tags($string))));
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Exemple : Générer des slugs</h3>
+        <p>Définir le service dans le fichier services.yml :</p>
+        <pre><code class="language-yaml">services:
+    app.slugger:
+        class: AppBundle\Utils\Slugger</code></pre>
+        <p>Faire appel au service :</p>
+        <pre><code class="language-php">$slug = $this->get('app.slugger')->slugify($book->getTitle());</code></pre>
+    </section>
+
+    <section>
+        <h3>Exemple : Uploader des fichiers</h3>
+        <p>L’upload de fichiers étant une tâche récurrente, il est pertinent de créer un service pour pouvoir simplifier le développement.</p>
+        <pre><code class="language-yaml">services:
+    app.file_uploader:
+        class: AppBundle\FileUploader
+        arguments: ['%uploads_directory%']</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/controller/upload_file.html#creating-an-uploader-service" target="_blank" class="info">Creating an Uploader Service</a>
+        </footer>
+    </section>
+
+</section>

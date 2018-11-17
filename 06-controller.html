@@ -1,0 +1,92 @@
+<section id="controller">
+
+    <section>
+        <h2>Controller</h2>
+    </section>
+
+    <section>
+        <h3>Présentation</h3>
+        <p>Le controller a pour but de faire le <strong>lien</strong> entre le routeur, la base de données et la vue.</p>
+        <p>Il est représenté par une <strong>méthode</strong> positionnée dans une <strong>classe</strong> qui hérite de la classe Controller.</p>
+        <p>Il récupère des informations (objet <strong>Request</strong>) pour ensuite retourner un résultat (objet <strong>Response</strong>).</p>
+    </section>
+
+    <section>
+        <h3>Récupérer un paramètre</h3>
+        <p>Il est possible de récupérer les paramètres de l’URL en définissant des paramètres dans la méthode :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test/{title}/{username}", name="page_test", defaults={"username": "Utilisateur"})
+ */
+public function testAction($title, $username)</code></pre>
+        <p>Il est également possible d’utiliser un converter :</p>
+        <pre><code class="language-php">/**
+ * @Route("/test/{id}", name="display_post")
+ * @ParamConverter("post", class="AppBundle:Post")
+ */
+public function displayAction(Post $post)</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html" target="_blank" class="info">ParamConverter</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Objet Request</h3>
+        <p>L’objet Request permet de récupérer les informations de la requête HTTP :</p>
+        <ul>
+            <li>request : $_POST</li>
+            <li>query : $_GET</li>
+            <li>cookie : $_COOKIE</li>
+            <li>files : $_FILES</li>
+            <li>server : $_SERVER</li>
+            <li>headers : Header de la requête HTTP (host, user-agent, accept…)</li>
+            <li>attributes : Utiliser pour stocker d’autres données</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/components/http_foundation.html#request" target="_blank" class="info">Objet Request</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Objet Request</h3>
+        <p>L’objet Request dispose également de nombreuses méthodes utiles :</p>
+        <ul>
+            <li>getMethod() : Récupérer la méthode utilisée (GET, POST…)</li>
+            <li>isXmlHttpRequest() : Pour savoir si il s’agit d’une requête AJAX</li>
+            <li>getLocale() : Récupérer la locale en cours (fr, en…)</li>
+            <li>getBasePath() : Récupérer l’URL appelée</li>
+            <li>...</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/components/http_foundation.html#request" target="_blank" class="info">Objet Request</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Objet Response</h3>
+        <p>L’objet Response stocke les informations qui seront renvoyées au client :</p>
+        <ul>
+            <li>setContent() : Définir le contenu de la réponse</li>
+            <li>setStatusCode() : Définir le code de retour (200, 500, 404…)</li>
+            <li>setCache() : Définir le cache du header de la réponse</li>
+            <li>send() : Envoyer la réponse au client</li>
+            <li>...</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/components/http_foundation.html#response" target="_blank" class="info">Objet Response</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Les méthodes principales</h3>
+        <p>Méthodes de la classe Controller :</p>
+        <pre><code class="language-php">$this->render('default/index.html.twig', array('username' => 'johndoe'));
+$url = $this->generateUrl('blog_show', array('slug' => 'my-blog-post'));
+$this->redirect('http://www.google.com');
+$this->redirectToRoute('blog_show', array('slug' => 'my-blog-post'));
+$this->forward('AppBundle:Blog:show', array('slug' => 'my-blog-post'));
+$this->addFlash('error', 'Une erreur s\'est produite !');
+$this->createNotFoundException('Utilisateur introuvable');
+$this->json(array('username' => 'johndoe'));</code></pre>
+    </section>
+
+</section>

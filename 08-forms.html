@@ -1,0 +1,149 @@
+<section id="forms">
+
+    <section>
+        <h2>Formulaires</h2>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <pre><code class="language-bash">composer require form
+composer require validator
+</code></pre>
+    </section>
+
+    <section>
+        <h3>L’objet FormBuilder</h3>
+        <p>L’objet FormBuilder permet de construire un formulaire HTML de façon simplifié et en écrivant du code PHP :</p>
+        <pre><code class="language-php">$form = $this->createFormBuilder($author)
+            ->add('firstname', TextType::class)
+            ->add('lastname', TextType::class)
+            ->add('save', SubmitType::class, array('label' => 'Enregistrer'))
+            ->getForm();</code></pre>
+    </section>
+
+    <section>
+        <h3>Les types de champs</h3>
+        <p>Le builder dispose d’une importante liste de <strong>types de champs</strong> (text, email, number, entity, choice, date, file...) ayant des fonctionnalités différentes.</p>
+        <p>Il peut également “<strong>deviner</strong>” le type de champ à utiliser en fonction des informations définies sur l’entité.</p>
+        <p>Chaque type de champs dispose de plusieurs <strong>options</strong> communes ou spécifiques (disabled, required, label, placeholder…)</p>
+        <p>Il est possible de créer son propre <a href="https://symfony.com/doc/current/form/create_custom_field_type.html" target="_blank">champ personnalisé</a>.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/reference/forms/types.html" target="_blank" class="info">Form types</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Afficher un formulaire dans Twig</h3>
+        <p>Après avoir envoyé le formulaire depuis le controller vers la vue, il est possible de l’afficher de plusieurs façons :</p>
+        <div class="container">
+            <div class="col">
+                <pre><code class="language-php">{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}</code></pre>
+            </div>
+            <div class="col">
+                <pre><code class="language-php">{{ form_start(form) }}
+    {{ form_errors(form) }}
+    &lt;div&gt;
+        {{ form_label(form.firstname) }}
+        {{ form_errors(form.firstname) }}
+        {{ form_widget(form.firstname) }}
+    &lt;/div&gt;
+    &lt;div&gt;
+        {{ form_label(form.lastname) }}
+        {{ form_errors(form.lastname) }}
+        {{ form_widget(form.lastname) }}
+    &lt;/div&gt;
+
+    &lt;div&gt;
+        {{ form_widget(form.save) }}
+    &lt;/div&gt;
+
+{{ form_end(form) }}</code></pre>
+            </div>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/form/rendering.html" target="_blank" class="info">Form Rendering</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Gérer l’envoi du formulaire</h3>
+        <p>Par défaut, le formulaire renvoi les données au Controller qui l’a affiché. Il est alors possible de sauvegarder les données de cette façon :</p>
+        <pre><code class="language-php">$form = $this->createFormBuilder($author)
+            ->add('firstname', TextType::class)
+            ->add('lastname', TextType::class)
+            ->add('save', SubmitType::class, array('label' => 'Enregistrer'))
+            ->getForm();
+
+$form->handleRequest($request);
+if ($form->isSubmitted() && $form->isValid()) {
+    $author = $form->getData();
+
+    $em = $this->getDoctrine()->getManager();
+    $em->persist($author);
+    $em->flush();
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>La validation</h3>
+        <p>Pour gérer la validation, il faut ajouter des contraintes dans des annotations directement sur les entités :</p>
+        <pre><code class="language-php">use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @Assert\NotBlank(message="Merci de saisir le prénom")
+ */
+public $firstname;</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/validation.html" target="_blank" class="info">Form Validation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Créer une classe pour les formulaires</h3>
+        <p>Il est préférable d’extraire les formulaires du Controller afin de pouvoir les <strong>réutiliser</strong> plusieurs fois. Pour cela, nous allons <strong>positionner nos formulaires dans des classes</strong> situées dans un dossier “Form”.</p>
+        <p>Nous pourrons ensuite générer le formulaire avec la méthode <strong>createForm</strong> depuis le Controller</p>
+        <pre><code class="language-php">class AuthorType extends AbstractType {
+    public function buildForm(FormBuilderInterface $builder, array $options) {
+        $builder->add('firstname')
+                ->add('lastname')
+                ->add('save', SubmitType::class);
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Uploader des fichiers</h3>
+        <p>Symfony dispose d’un objet <strong>FileType</strong> pour gérer les champs de formulaire de type file ainsi qu’un objet <strong>UploadedFile</strong> pour gérer l’upload d’un fichier.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/controller/upload_file.html" target="_blank" class="info">File Upload</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Modifier le template des formulaires</h3>
+        <p>Il est possible de modifier le template HTML d’un formulaire à différents niveaux :</p>
+        <ul>
+            <li>Global</li>
+            <li>Sur une page</li>
+            <li>Sur un champ</li>
+        </ul>
+        <pre><code class="language-yaml"># app/config/config.yml
+twig:
+    form_theme: 'bootstrap_3_layout.html.twig'</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/form/form_customization.html" target="_blank" class="info">Form Customization</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Génération d'un CRUD</h3>
+        <p>Il est possible d'utiliser le bundle <strong>MakerBundle</strong> pour générer automatiquement les fichiers nécessaires pour un CRUD :</p>
+        <pre><code class="language-bash">php bin/console make:crud</code></pre>
+        <footer>
+            <a href="https://symfony.com/blog/new-and-improved-generators-for-makerbundle" target="_blank" class="info">Symfony blog post</a>
+        </footer>
+    </section>
+
+</section>

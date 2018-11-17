@@ -1,0 +1,177 @@
+<section id="view">
+
+    <section>
+        <h2>Vue</h2>
+    </section>
+
+    <section>
+        <h3>Le moteur de template : Twig</h3>
+        <div class="container">
+            <div class="col" style="flex: 2;">
+                <ul>
+                    <li>Créer par SensioLabs</li>
+                    <li>Bundle pouvant fonctionner indépendamment</li>
+                    <li>Plus simple</li>
+                    <li>Plus sécurisé</li>
+                    <li>Compréhensible par les designers</li>
+                </ul>
+            </div>
+            <div class="col">
+                <img src="assets/images/twig.png" alt="Twig">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Les différents tags</h3>
+        <ul>
+            <li>{{ }} : Afficher une valeur (echo)</li>
+            <li>{% %} : Effectuer une action (foreach, if…)</li>
+            <li>{# #} : Commentaires</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Les filtres</h3>
+        <p>Les filtres sont utilisés pour modifier un contenu lors de son affichage :</p>
+        <pre><code class="language-php">{{ title|upper }} <!-- Mettre en majuscules -->
+{{ createdAt|date("d M Y") }} <!-- Formater une date -->
+{{ 15.1561|number_format(2) }} <!-- Afficher 2 chiffres après la virgule -->
+{{ username|escape }} <!-- Échapper une chaîne de caractères -->
+{{ [1, 2, 3]|last }} <!-- Dernier élément d'un tableau --></code></pre>
+    </section>
+
+    <section>
+        <h3>Liens Controller <-> Vue</h3>
+        <div class="container">
+            <div class="col">
+                <h4>Controller</h4>
+                <pre><code class="language-php">$this->render('default/index.html.twig');
+$this->render(AppBundle:Default:index.html.twig');</code></pre>
+            </div>
+            <div class="col">
+                <h4>Vue</h4>
+                <pre><code class="language-php">{{ path('article_show', {'slug': article.slug}) }}
+{{ url('homepage') }}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Remplacer par Webpack Encore !! -->
+    <section>
+        <h3>Assets</h3>
+        <p>Twig dispose d’une fonction asset qui permet de générer les URLs vers les fichiers CSS, JS, images…</p>
+        <p>Cette fonction permet également de gérer les versions des fichiers pour permettre d’éviter les problème de cache.</p>
+        <pre><code class="language-php"><img src="{{ asset('images/logo.png') }}" alt="{{ sitename }}" />
+<link href="{{ asset('css/blog.css') }}" rel="stylesheet" /></code></pre>
+        <p>Il existe également le bundle assetic qui permet de regrouper les CSS dans un seul fichier, les minifier ou encore optimiser les images.</p>
+    </section>
+
+    <section>
+        <h3>Définir et modifier des variables</h3>
+        <p>Le mot clé “set” permet de définir la valeur d’une variable :</p>
+        <pre><code class="language-php">{{ set url = 'http://' ~ app.request.host }}</code></pre>
+    </section>
+
+    <section>
+        <h3>Conditions</h3>
+        <pre><code class="language-php">{% if posts %}
+    Il y a {{ post|length }} article(s).
+{% elseif not is_granted('ROLE_ADMIN') %}
+    Aucun article !
+{% else %}
+    Il faut ajouter des articles !
+{% endif %}</code></pre>
+        <footer>
+            <a href="https://twig.symfony.com/doc/2.x/tags/if.html" target="_blank" class="info">Twig if documentation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Boucles</h3>
+        <pre><code class="language-php">{% for user in users if user.active %}
+    <li>{{ user.username|e }}</li>
+{% else %}
+    <li>Aucun utilisateur actif</li>
+{% endfor %}
+
+{% for post in posts %}
+    <li>
+        {% if loop.last %}Dernier article :{% endif %}
+        {{ loop.index }} - {{ post.title }}
+    </li>
+{% endfor %}</code></pre>
+        <footer>
+            <a href="https://twig.symfony.com/doc/2.x/tags/for.html" target="_blank" class="info">Twig for documentation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Inclure un template</h3>
+        <p>Twig permet d’inclure un autre fichier Twig avec l’instruction “include” :</p>
+        <pre><code class="language-php">{% for post in posts.active %}
+    {{ include('post/_post_details.html.twig', { 'post': post }) }}
+{% endfor %}</code></pre>
+        <footer>
+            <a href="https://twig.symfony.com/doc/2.x/tags/include.html" target="_blank" class="info">Twig include documentation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Afficher le rendu d’un controller</h3>
+        <p>Il est parfois nécessaire de passer par un controller avant d’afficher un template de page (afficher un menu dynamique, une sidebar, un footer avec des infos de contact...).</p>
+        <pre><code class="language-php">{{ render(controller('AppBundle:Post:MostSeen', { 'limit': 5 })) }}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/templating/embedding_controllers.html" target="_blank" class="info">Twig embedding controller documentation</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Héritage</h3>
+        <div class="container">
+            <div class="col">
+                <p>Contrairement au PHP, Twig permet de mettre en place nativement un système d’héritage dans les templates :</p>
+                <pre><code class="language-php">{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Administration</h1>
+
+    {% block content %}{% endblock %}
+{% endblock %}</code></pre>
+            </div>
+            <div class="col">
+                <img src="assets/images/twig-inheritance.png" alt="Twig Héritage">
+            </div>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/templating/inheritance.html" target="_blank" class="info">Template Inheritance</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>La variable globale app</h3>
+        <ul>
+            <li>app.user : Utilisateur en cours</li>
+            <li>app.request : Objet Request en cours</li>
+            <li>app.session : Objet Session en cours</li>
+            <li>app.environment : Environnement en cours (dev, prod…)</li>
+            <li>app.debug : Booléen vrai ou faux</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/templating/app_variable.html" target="_blank" class="info">App variables</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Afficher du code HTML</h3>
+        <p>Par défaut, Twig sécurise les variables affichées sur une page. Il est cependant possible de désactiver cette sécurité avec le filtre raw si l’on souhaite afficher le contenu provenant d’un WYSIWYG par exemple.</p>
+        <pre><code class="language-php">{{ article.body|raw }}</code></pre>
+    </section>
+
+    <section>
+        <h3>Débugger une variable</h3>
+        <p>Dans les Controller mais également dans les templates Twig, il est possible de débugger une variable en utilisant la fonction dump du VarDumper component.</p>
+        <pre><code class="language-php">{{ dump(article) }}</code></pre>
+    </section>
+
+</section>
