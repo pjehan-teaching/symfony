@@ -47,7 +47,8 @@ composer update
                 Avec Composer
                 <ul>
                     <li>Installer Composer : <a href="https://getcomposer.org/doc/00-intro.md" target="_blank">https://getcomposer.org/doc/00-intro.md</a></li>
-                    <li><code class="language-bash">composer create-project symfony/skeleton my-project "4.1.*"</code></li>
+                    <li><code class="language-bash">composer create-project symfony/skeleton my-project</code> <a href="https://github.com/symfony/skeleton" target="_blank">skeleton</a></li>
+                    <li><code class="language-bash">composer create-project symfony/website-skeleton my-project</code> <a href="https://github.com/symfony/website-skeleton" target="_blank">website-skeleton</a></li>
                 </ul>
             </li>
             <li>
@@ -136,6 +137,24 @@ composer update
         </ul>
         <footer>
             <a href="http://symfony.com/doc/current/console.html" target="_blank" class="info">Console</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Symfony Flex</h3>
+        <p>Flex est un plugin Composer permettant d'ajouter des actions sur les commandes require, update et remove.</p>
+        <p>Une fois installé, la commande <code class="language-bash">composer require package-name</code> recherchera dans un premier temps sur le serveur Symfony Flex pour rechercher la <strong>recette</strong> correspondante.</p>
+    </section>
+
+    <section>
+        <h3>Serveur PHP</h3>
+        <p>Symfony propose une interaface en ligne de commande permettant de faciliter l'utilisation du serveur PHP :</p>
+        <pre><code class="language-bash">composer require symfony/web-server-bundle --dev</code></pre>
+        <p>Vous pouvez ensuite démarrer / stopper le serveur de cette façon :</p>
+        <pre><code class="language-bash">php bin/console server:start
+php bin/console server:stop</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/setup/built_in_web_server.html" target="_blank" class="info">Symfony built-in Web Server</a>
         </footer>
     </section>
 
