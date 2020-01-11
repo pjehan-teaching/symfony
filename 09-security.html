@@ -126,7 +126,7 @@ $admin->setPassword($encodedPassword);</code></pre>
     <section>
         <h3>Login</h3>
         <p>Créer le template Twig correspondant :</p>
-        <pre><code class="language-php">{% if error %}
+        <pre><code class="language-twig">{% if error %}
     &lt;div&gt;{{ error.messageKey|trans(error.messageData, 'security') }}&lt;/div&gt;
 {% endif %}
 &lt;form action="{{ path('login') }}" method="post"&gt;
@@ -222,13 +222,13 @@ public function registerAction(Request $request) {
     <section>
         <h3>Register</h3>
         <p>Enfin, créer la vue dans le fichier register.html.twig :</p>
-        <pre style="max-height: 500px;"><code class="language-php">{{ form_start(form) }}
+        <pre style="max-height: 500px;"><code class="language-twig">{{ form_start(form) }}
     {{ form_row(form.username) }}
     {{ form_row(form.email) }}
     {{ form_row(form.plainPassword.first) }}
     {{ form_row(form.plainPassword.second) }}
 
-    <button type="submit">Register!</button>
+    &lt;button type="submit"&gt;Register!&lt;/button&gt;
 {{ form_end(form) }}</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>

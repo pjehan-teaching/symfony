@@ -1,0 +1,27 @@
+.reveal {
+
+    pre[class*="language-"] {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 0.6em;
+        padding: 0.5em;
+        code {
+            padding: 0;
+        }
+    }
+
+    img.logo {
+        box-sizing: border-box;
+        max-height: 200px;
+        max-width: 100%;
+        background-color: white;
+        padding: 1em;
+    }
+
+    section ul,
+    section ol {
+        display: block;
+        margin-bottom: 1em;
+    }
+
+}

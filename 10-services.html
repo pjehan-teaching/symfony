@@ -16,14 +16,14 @@
 
     <section>
         <h3>Déclarer un service</h3>
-        <pre class="code language-yaml">services:
+        <pre><code class="language-yaml">services:
     app.my_service
         class: AppBundle\Utils\MyService
         arguments: ['%my_parameter%', '@app.other_service']
         calls:
             - method: setOtherService
               arguments:
-                  - '@app.other_service'</pre>
+                  - '@app.other_service'</code></pre>
     </section>
 
     <section>

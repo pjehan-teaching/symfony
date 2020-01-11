@@ -37,12 +37,12 @@ composer require validator
         <p>Après avoir envoyé le formulaire depuis le controller vers la vue, il est possible de l’afficher de plusieurs façons :</p>
         <div class="container">
             <div class="col">
-                <pre><code class="language-php">{{ form_start(form) }}
+                <pre><code class="language-twig">{{ form_start(form) }}
 {{ form_widget(form) }}
 {{ form_end(form) }}</code></pre>
             </div>
             <div class="col">
-                <pre><code class="language-php">{{ form_start(form) }}
+                <pre><code class="language-twig">{{ form_start(form) }}
     {{ form_errors(form) }}
     &lt;div&gt;
         {{ form_label(form.firstname) }}
