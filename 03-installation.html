@@ -6,11 +6,11 @@
 
     <section>
         <h3>Prérequis</h3>
-        <p>Symfony 4+ :</p>
+        <p>Symfony 5+ :</p>
         <ul style="display: block;">
-            <li>PHP 7.1.3 +</li>
+            <li>PHP 7.2.5 +</li>
             <li>Composer / Symfony installer</li>
-            <li>Configuration de date.timezone dans le fichier php.ini</li>
+            <li>Plusieurs modules PHP (Ctype, iconv, JSON...)</li>
         </ul>
         <p>Doctrine :</p>
         <ul style="display: block;">
@@ -52,10 +52,10 @@ composer update
                 </ul>
             </li>
             <li>
-                Avec Symfony Installer (deprecated)
+                Avec Symfony Installer (<del>deprecated</del> de retour dans la V5)
                 <ul>
                     <li>Installer l’application Symfony Installer : <a href="https://symfony.com/doc/3.4/setup.html#creating-symfony-applications" target="_blank">https://symfony.com/doc/3.4/setup.html#creating-symfony-applications</a></li>
-                    <li><code class="language-bash">symfony new my_project_name</code></li>
+                    <li><code class="language-bash">symfony new my_project_name --full</code></li>
                 </ul>
             </li>
         </ul>
@@ -149,10 +149,10 @@ composer update
     <section>
         <h3>Serveur PHP</h3>
         <p>Symfony propose une interaface en ligne de commande permettant de faciliter l'utilisation du serveur PHP :</p>
-        <pre><code class="language-bash">composer require symfony/web-server-bundle --dev</code></pre>
+        <pre><code class="language-bash">symfony server:start</code></pre>
         <p>Vous pouvez ensuite démarrer / stopper le serveur de cette façon :</p>
-        <pre><code class="language-bash">php bin/console server:start
-php bin/console server:stop</code></pre>
+        <pre><code class="language-bash">symfony server:start -d
+php symfony server:stop</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/setup/built_in_web_server.html" target="_blank" class="info">Symfony built-in Web Server</a>
         </footer>
