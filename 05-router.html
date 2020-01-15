@@ -48,8 +48,7 @@ public function testAction($title, $username)</code></pre>
 public function testAction($_locale, $year)</code></pre>
         <p>Route avec contraintes sur le méthode :</p>
         <pre><code class="language-php">/**
- * @Route("/test, name="page_test")
- * @Method({"GET", "POST"})
+ * @Route("/test, name="page_test", methods={"GET", "POST"})
  */
 public function testAction()</code></pre>
     </section>
@@ -75,7 +74,7 @@ public function testAction()</code></pre>
  */
 public function showAction(Book $book)</code></pre>
         <footer>
-            <a href="#" class="info">Symfony peut faire la conversion automatiquement</a>
+            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html" class="info">Symfony peut faire la conversion automatiquement</a>
         </footer>
     </section>
 
