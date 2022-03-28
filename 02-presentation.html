@@ -16,6 +16,7 @@
                     <li>Version 3 sortie en 2015</li>
                     <li>Version 4 sortie fin 2017</li>
                     <li>Version 5 sortie fin 2019</li>
+                    <li>Version 6 sortie fin 2021</li>
                 </ul>
             </div>
             <div class="col">
@@ -37,223 +38,244 @@
 
     <section>
         <h3>Roadmap</h3>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 855 520">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 855 530">
             <!-- this chart was originally inspired by http://php.net/supported-versions.php -->
             <style type="text/css">
-
-                text { fill: var(--text-color); font-family: Lucida Grande, Lucida Sans Unicode, Lucida Sans, Geneva, Verdana, sans-serif; font-size: 18px; }
-                .legend text { fill: var(--text-color) !important; font-size: 15px; }
-
-                g.eol rect, .branches rect.eol { fill: #d73a49; }
-                g.eol text { fill: #fff; }
-
-                g.eom rect, .branches rect.eom { fill: #ffd33d; }
-                g.eom text { fill: #18171b; }
-
-                g.stable rect, .branches rect.stable { fill: #28a745; }
-                g.stable text { fill: #fff; }
-
-                g.unstable rect, .branches rect.unstable { fill: #fff; stroke: #dedede; stroke-width: 2px; }
-                g.unstable text { fill: #18171b; }
-                .legend g.unstable text { fill: var(--text-color); }
-
-                .branch-labels text { dominant-baseline: central; text-anchor: middle; }
-                .branches line { stroke: var(--gray); stroke-width: 1px; stroke-dasharray: 3,3; }
-
-                .today line { stroke: var(--black); stroke-dasharray: 10,10; stroke-width: 4px; }
-                .today text { fill: var(--black); text-anchor: middle; }
-
-                .years line { stroke: var(--gray-darker); }
-                .years text { font-weight: bold; text-anchor: middle; }
-
-                .branches a:hover, .branch-labels a:hover,
-                .branch-labels a:hover g.unstable rect { cursor: pointer; stroke-width: 2px; stroke: var(--link-color); text-decoration: none; }
-                .branch-labels a:hover text { stroke-width: 0; }
-
+                
+                    :root {
+                        --chart-grid-horizontal-line-color: #d1d5db;
+                        --chart-grid-vertical-line-color: #b1b6c0;
+                        --chart-red-color: #dc2626;
+                        --chart-yellow-color: #facc15;
+                        --chart-green-color: #16a34a;
+                        --font-size-md: 16px;
+                    }
+                    .dark-theme {
+                        --chart-grid-horizontal-line-color: var(--gray-600);
+                        --chart-grid-vertical-line-color: var(--gray-500);
+                        --chart-red-color: var(--red-700);
+                        --chart-yellow-color: var(--yellow-600);
+                        --chart-green-color: var(--green-700);
+                    }
+        
+                    text { fill: var(--text-color); font-family: var(--font-family-base); font-size: var(--font-size-md); }
+                    .legend text { fill: var(--text-color) !important; font-size: 15px; }
+        
+                    .branches rect { rx: 5; }
+        
+                    g.eol rect, .branches rect.eol { fill: var(--chart-red-color); }
+                    g.eol text { fill: #fff; }
+        
+                    g.eom rect, .branches rect.eom { fill: var(--chart-yellow-color); }
+                    g.eom text { fill: #18171b; }
+        
+                    g.stable rect, .branches rect.stable { fill: var(--chart-green-color); }
+                    g.stable text { fill: #fff; }
+        
+                    g.unstable rect, .branches rect.unstable { fill: #fff; stroke: var(--chart-grid-horizontal-line-color); stroke-width: 2px; }
+                    g.unstable text { fill: #18171b; }
+                    .legend g.unstable text { fill: var(--text-color); }
+        
+                    .legend rect { rx: 2; }
+        
+                    .branch-labels rect { rx: 5; }
+                    .branch-labels text { dominant-baseline: central; text-anchor: middle; }
+                    .branches line { stroke: var(--chart-grid-horizontal-line-color); stroke-width: 1px; stroke-dasharray: 4, 6; }
+        
+                    .today line { stroke: var(--text-color); stroke-dasharray: 10, 15; stroke-width: 4px; stroke-linecap: round; }
+                    .today text { fill: var(--text-color); text-anchor: middle; }
+        
+                    .years line { stroke: var(--chart-grid-vertical-line-color); }
+                    .years text { font-weight: bold; text-anchor: middle; }
+        
+                    .branches a:hover, .branch-labels a:hover,
+                    .branch-labels a:hover g.unstable rect { cursor: pointer; stroke-width: 2px; stroke: var(--link-color); stroke-linecap: round; text-decoration: none; }
+                    .branch-labels a:hover text { stroke-width: 0; }
+                
             </style>
-
+        
             <g class="years">
-                <line x1="90" y1="30" x2="90" y2="430"></line>
-                <text x="90" y="15">
-                    2018
-                </text>
-                <line x1="209.92114773847" y1="30" x2="209.92114773847" y2="430"></line>
-                <text x="209.92114773847" y="15">
-                    2019
-                </text>
-                <line x1="329.84229547695" y1="30" x2="329.84229547695" y2="430"></line>
-                <text x="329.84229547695" y="15">
-                    2020
-                </text>
-                <line x1="450.09199430511" y1="30" x2="450.09199430511" y2="430"></line>
-                <text x="450.09199430511" y="15">
-                    2021
-                </text>
-                <line x1="570.01314204359" y1="30" x2="570.01314204359" y2="430"></line>
-                <text x="570.01314204359" y="15">
-                    2022
-                </text>
-                <line x1="689.93428978206" y1="30" x2="689.93428978206" y2="430"></line>
-                <text x="689.93428978206" y="15">
-                    2023
-                </text>
-            </g>
-
+                            <line x1="90" y1="30" x2="90" y2="440"></line>
+                    <text x="90" y="20">
+                        2020
+                    </text>
+                            <line x1="210.24969882817" y1="30" x2="210.24969882817" y2="440"></line>
+                    <text x="210.24969882817" y="20">
+                        2021
+                    </text>
+                            <line x1="330.17084656664" y1="30" x2="330.17084656664" y2="440"></line>
+                    <text x="330.17084656664" y="20">
+                        2022
+                    </text>
+                            <line x1="450.09199430511" y1="30" x2="450.09199430511" y2="440"></line>
+                    <text x="450.09199430511" y="20">
+                        2023
+                    </text>
+                            <line x1="570.01314204359" y1="30" x2="570.01314204359" y2="440"></line>
+                    <text x="570.01314204359" y="20">
+                        2024
+                    </text>
+                            <line x1="690.26284087176" y1="30" x2="690.26284087176" y2="440"></line>
+                    <text x="690.26284087176" y="20">
+                        2025
+                    </text>
+                    </g>
+        
             <g class="branches">
-                <line x1="0" y1="25" x2="855" y2="25"></line>
-                <a xlink:href="/releases/3.2" target="_blank">
-                    <rect class="stable" x="90" y="30" width="0" height="30"></rect>
-                    <rect class="eom" x="90" y="30" width="7.8852261526667" height="30"></rect>
-                </a>
-                <line x1="0" y1="65" x2="855" y2="65"></line>
-                <a xlink:href="/releases/3.3" target="_blank">
-                    <rect class="stable" x="90" y="70" width="7.8852261526667" height="30"></rect>
-                    <rect class="eom" x="97.885226152667" y="70" width="59.467747234695" height="30"></rect>
-                </a>
-                <line x1="0" y1="105" x2="855" y2="105"></line>
-                <a xlink:href="/releases/3.4" target="_blank">
-                    <rect class="stable" x="90" y="110" width="347.93560398642" height="30"></rect>
-                    <rect class="eom" x="437.93560398642" y="110" width="119.92114773847" height="30"></rect>
-                </a>
-                <line x1="0" y1="145" x2="855" y2="145"></line>
-                <a xlink:href="/releases/4.0" target="_blank">
-                    <rect class="stable" x="90" y="150" width="67.352973387362" height="30"></rect>
-                    <rect class="eom" x="157.35297338736" y="150" width="60.453400503778" height="30"></rect>
-                </a>
-                <line x1="0" y1="185" x2="855" y2="185"></line>
-                <a xlink:href="/releases/4.1" target="_blank">
-                    <rect class="stable" x="137.311356916" y="190" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="217.80637389114" y="190" width="59.467747234695" height="30"></rect>
-                </a>
-                <line x1="0" y1="225" x2="855" y2="225"></line>
-                <a xlink:href="/releases/4.2" target="_blank">
-                    <rect class="stable" x="197.76475741978" y="230" width="79.509363706056" height="30"></rect>
-                    <rect class="eom" x="277.27412112584" y="230" width="60.453400503778" height="30"></rect>
-                </a>
-                <line x1="0" y1="265" x2="855" y2="265"></line>
-                <a xlink:href="/releases/4.3" target="_blank">
-                    <rect class="stable" x="257.23250465447" y="270" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="337.72752162961" y="270" width="59.796298324389" height="30"></rect>
-                </a>
-                <line x1="0" y1="305" x2="855" y2="305"></line>
-                <a xlink:href="/releases/4.4" target="_blank">
-                    <rect class="stable" x="317.68590515825" y="310" width="360.09199430511" height="30"></rect>
-                    <rect class="eom" x="677.77789946337" y="310" width="119.92114773847" height="30"></rect>
-                </a>
-                <line x1="0" y1="345" x2="855" y2="345"></line>
-                <a xlink:href="/releases/5.0" target="_blank">
-                    <rect class="stable" x="317.68590515825" y="350" width="79.837914795751" height="30"></rect>
-                    <rect class="eom" x="397.523819954" y="350" width="0" height="30"></rect>
-                </a>
-                <line x1="0" y1="385" x2="855" y2="385"></line>
-                <a xlink:href="/releases/5.1" target="_blank">
-                    <rect class="stable" x="377.48220348264" y="390" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="457.97722045778" y="390" width="0" height="30"></rect>
-                </a>
-            </g>
-
+                            <line x1="0" y1="35" x2="855" y2="35"></line>
+                    <a xlink:href="/releases/4.2" target="_blank">
+                        <rect class="stable" x="90" y="40" width="0" height="30"></rect>
+                        <rect class="eom" x="90" y="40" width="7.8852261526667" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="75" x2="855" y2="75"></line>
+                    <a xlink:href="/releases/4.3" target="_blank">
+                        <rect class="stable" x="90" y="80" width="7.8852261526667" height="30"></rect>
+                        <rect class="eom" x="97.885226152667" y="80" width="59.796298324389" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="115" x2="855" y2="115"></line>
+                    <a xlink:href="/releases/4.4" target="_blank">
+                        <rect class="stable" x="90" y="120" width="347.93560398642" height="30"></rect>
+                        <rect class="eom" x="437.93560398642" y="120" width="119.92114773847" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="155" x2="855" y2="155"></line>
+                    <a xlink:href="/releases/5.0" target="_blank">
+                        <rect class="stable" x="90" y="160" width="67.681524477056" height="30"></rect>
+                        <rect class="eom" x="157.68152447706" y="160" width="0" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="195" x2="855" y2="195"></line>
+                    <a xlink:href="/releases/5.1" target="_blank">
+                        <rect class="stable" x="137.63990800569" y="200" width="80.49501697514" height="30"></rect>
+                        <rect class="eom" x="218.13492498083" y="200" width="0" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="235" x2="855" y2="235"></line>
+                    <a xlink:href="/releases/5.2" target="_blank">
+                        <rect class="stable" x="198.09330850947" y="240" width="79.509363706056" height="30"></rect>
+                        <rect class="eom" x="277.60267221553" y="240" width="0" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="275" x2="855" y2="275"></line>
+                    <a xlink:href="/releases/5.3" target="_blank">
+                        <rect class="stable" x="257.56105574417" y="280" width="80.49501697514" height="30"></rect>
+                        <rect class="eom" x="338.05607271931" y="280" width="0" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="315" x2="855" y2="315"></line>
+                    <a xlink:href="/releases/5.4" target="_blank">
+                        <rect class="stable" x="318.01445624795" y="320" width="360.09199430511" height="30"></rect>
+                        <rect class="eom" x="678.10645055306" y="320" width="119.92114773847" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="355" x2="855" y2="355"></line>
+                    <a xlink:href="/releases/6.0" target="_blank">
+                        <rect class="stable" x="318.01445624795" y="360" width="139.96276420983" height="30"></rect>
+                        <rect class="eom" x="457.97722045778" y="360" width="0" height="30"></rect>
+                    </a>
+                            <line x1="0" y1="395" x2="855" y2="395"></line>
+                    <a xlink:href="/releases/6.1" target="_blank">
+                        <rect class="stable" x="377.48220348264" y="400" width="80.49501697514" height="30"></rect>
+                        <rect class="eom" x="457.97722045778" y="400" width="0" height="30"></rect>
+                    </a>
+                    </g>
+        
             <g class="branch-labels">
-                <a xlink:href="/releases/3.2" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="30" width="45" height="30"></rect>
-                        <text x="22.5" y="45">
-                            3.2
-                        </text>
+                            <a xlink:href="/releases/4.2" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="40" width="45" height="30"></rect>
+                            <text x="22.5" y="55">
+                                4.2
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/4.3" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="80" width="45" height="30"></rect>
+                            <text x="22.5" y="95">
+                                4.3
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/4.4" target="_blank">
+                        <g class="stable">
+                            <rect x="1" y="120" width="45" height="30"></rect>
+                            <text x="22.5" y="135">
+                                4.4
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/5.0" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="160" width="45" height="30"></rect>
+                            <text x="22.5" y="175">
+                                5.0
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/5.1" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="200" width="45" height="30"></rect>
+                            <text x="22.5" y="215">
+                                5.1
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/5.2" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="240" width="45" height="30"></rect>
+                            <text x="22.5" y="255">
+                                5.2
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/5.3" target="_blank">
+                        <g class="eol">
+                            <rect x="1" y="280" width="45" height="30"></rect>
+                            <text x="22.5" y="295">
+                                5.3
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/5.4" target="_blank">
+                        <g class="stable">
+                            <rect x="1" y="320" width="45" height="30"></rect>
+                            <text x="22.5" y="335">
+                                5.4
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/6.0" target="_blank">
+                        <g class="stable">
+                            <rect x="1" y="360" width="45" height="30"></rect>
+                            <text x="22.5" y="375">
+                                6.0
+                            </text>
+                        </g>
+                    </a>
+                            <a xlink:href="/releases/6.1" target="_blank">
+                        <g class="unstable">
+                            <rect x="1" y="400" width="45" height="30"></rect>
+                            <text x="22.5" y="415">
+                                6.1
+                            </text>
+                        </g>
+                    </a>
                     </g>
-                </a>
-                <a xlink:href="/releases/3.3" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="70" width="45" height="30"></rect>
-                        <text x="22.5" y="85">
-                            3.3
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/3.4" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="110" width="45" height="30"></rect>
-                        <text x="22.5" y="125">
-                            3.4
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/4.0" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="150" width="45" height="30"></rect>
-                        <text x="22.5" y="165">
-                            4.0
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/4.1" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="190" width="45" height="30"></rect>
-                        <text x="22.5" y="205">
-                            4.1
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/4.2" target="_blank">
-                    <g class="eom">
-                        <rect x="1" y="230" width="45" height="30"></rect>
-                        <text x="22.5" y="245">
-                            4.2
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/4.3" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="270" width="45" height="30"></rect>
-                        <text x="22.5" y="285">
-                            4.3
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/4.4" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="310" width="45" height="30"></rect>
-                        <text x="22.5" y="325">
-                            4.4
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.0" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="350" width="45" height="30"></rect>
-                        <text x="22.5" y="365">
-                            5.0
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.1" target="_blank">
-                    <g class="unstable">
-                        <rect x="1" y="390" width="45" height="30"></rect>
-                        <text x="22.5" y="405">
-                            5.1
-                        </text>
-                    </g>
-                </a>
-            </g>
-
-            <g class="legend">
+        
+                <g class="legend">
                 <g class="stable">
-                    <rect x="5" y="485" width="12" height="12"></rect>
-                    <text x="23" y="496">Maintained version</text>
+                    <rect x="5" y="495" width="12" height="12"></rect>
+                    <text x="23" y="506">Maintained version</text>
                 </g>
-
+        
                 <g class="eom">
-                    <rect x="185" y="485" width="12" height="12"></rect>
-                    <text x="203" y="496">Security fixes only</text>
+                    <rect x="185" y="495" width="12" height="12"></rect>
+                    <text x="203" y="506">Security fixes only</text>
                 </g>
-
+        
                 <g class="eol">
-                    <rect x="360" y="485" width="12" height="12"></rect>
-                    <text x="378" y="496">End of life version</text>
+                    <rect x="360" y="495" width="12" height="12"></rect>
+                    <text x="378" y="506">End of life version</text>
                 </g>
-
+        
                 <g class="unstable">
-                    <rect x="530" y="485" width="12" height="12"></rect>
-                    <text x="548" y="496">Unreleased version</text>
+                    <rect x="530" y="495" width="12" height="12"></rect>
+                    <text x="548" y="506">Unreleased version</text>
                 </g>
             </g>
         </svg>
@@ -284,7 +306,7 @@
             <div class="col"><img src="assets/images/ffr.png" class="logo" alt="FFR"></div>
         </div>
         <div class="container">
-            <div class="col"><img src="assets/images/delicious.svg" class="logo" alt="Delicious"></div>
+            <div class="col"><img src="assets/images/spotify.jpg" class="logo" alt="Spotify"></div>
             <div class="col"><img src="assets/images/national-geographic.png" class="logo" alt="National Geographic"></div>
             <div class="col"><img src="assets/images/total.png" class="logo" alt="Total"></div>
         </div>

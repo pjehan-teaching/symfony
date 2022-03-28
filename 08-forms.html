@@ -42,7 +42,7 @@ composer require validator
 {{ form_end(form) }}</code></pre>
             </div>
             <div class="col">
-                <pre><code class="language-twig">{{ form_start(form) }}
+                <pre style="max-height: 50vh;"><code class="language-twig">{{ form_start(form) }}
     {{ form_errors(form) }}
     &lt;div&gt;
         {{ form_label(form.firstname) }}
@@ -91,9 +91,7 @@ if ($form->isSubmitted() && $form->isValid()) {
         <p>Pour gérer la validation, il faut ajouter des contraintes dans des annotations directement sur les entités :</p>
         <pre><code class="language-php">use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\NotBlank(message="Merci de saisir le prénom")
- */
+#[Assert\NotBlank(message: "Merci de saisir le prénom")]
 public $firstname;</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/validation.html" target="_blank" class="info">Form Validation</a>

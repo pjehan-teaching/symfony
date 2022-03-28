@@ -46,7 +46,7 @@
         <div class="container">
             <div class="col">
                 <h4>Controller</h4>
-                <pre><code class="language-twig">$this->render('default/index.html.twig');
+                <pre><code class="language-php">$this->render('default/index.html.twig');
 $this->render('AppBundle:Default:index.html.twig');</code></pre>
             </div>
             <div class="col">
@@ -90,16 +90,16 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
     <section>
         <h3>Boucles</h3>
         <pre><code class="language-twig">{% for user in users if user.active %}
-    <li>{{ user.username|e }}</li>
+    &lt;li&gt;{{ user.username|e }}&lt;/li&gt;
 {% else %}
-    <li>Aucun utilisateur actif</li>
+    &lt;li&gt;Aucun utilisateur actif&lt;/li&gt;
 {% endfor %}
 
 {% for post in posts %}
-    <li>
+    &lt;li&gt;
         {% if loop.last %}Dernier article :{% endif %}
         {{ loop.index }} - {{ post.title }}
-    </li>
+    &lt;/li&gt;
 {% endfor %}</code></pre>
         <footer>
             <a href="https://twig.symfony.com/doc/2.x/tags/for.html" target="_blank" class="info">Twig for documentation</a>

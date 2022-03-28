@@ -14,16 +14,13 @@
     <section>
         <h3>Récupérer un paramètre</h3>
         <p>Il est possible de récupérer les paramètres de l’URL en définissant des paramètres dans la méthode :</p>
-        <pre><code class="language-php">/**
- * @Route("/test/{title}/{username}", name="page_test", defaults={"username": "Utilisateur"})
- */
-public function testAction($title, $username)</code></pre>
+        <pre><code class="language-php">
+#[Route("/test/{title}/{username}", name: "page_test")]
+public function testAction(string $title = "Default page title", string $username): Response</code></pre>
         <p>Il est également possible d’utiliser un converter :</p>
-        <pre><code class="language-php">/**
- * @Route("/test/{id}", name="display_post")
- * @ParamConverter("post", class="AppBundle:Post")
- */
-public function displayAction(Post $post)</code></pre>
+        <pre><code class="language-php">#[Route("/book/{id}")]
+#[ParamConverter("book", class: "App:Book")]
+public function showAction(Book $book): Response</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html" target="_blank" class="info">ParamConverter</a>
         </footer>

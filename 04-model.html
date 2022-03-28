@@ -44,7 +44,7 @@ php bin/console list doctrine
             <li>Model First : Model → Code → BDD</li>
             <li>Code First : Code → Model → BDD</li>
         </ul>
-        <p>Dans Symfony, le Model et le Code sont fortement liés, surtout avec l’utilisation des annotations.</p>
+        <p>Dans Symfony, le Model et le Code sont fortement liés, surtout avec l’utilisation des annotations/attirbuts.</p>
     </section>
 
     <section>
@@ -74,7 +74,7 @@ php bin/console doctrine:generate:entities AppBundle</code></pre>
 
     <section>
         <h3>Code First</h3>
-        <p>Génération de la base de données :</p>
+        <p>Génération du fichier SQL de migration :</p>
         <pre><code class="language-bash">php bin/console doctrine:migrations:diff</code></pre>
         <p>Mise à jour de la base de données :</p>
         <pre><code class="language-bash">php bin/console doctrine:migrations:migrate</code></pre>
@@ -95,13 +95,13 @@ php bin/console doctrine:generate:entities AppBundle</code></pre>
             <div class="col" style="max-width: 450px;">
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-/** @Entity */
+#[Entity]
 class Product
 {
     /**
      * One Product has Many Features.
-     * @OneToMany(targetEntity="Feature", mappedBy="product")
      */
+    #[OneToMany(targetEntity: "Feature", mappedBy: "product")]
     private $features;
 
     public function __construct() {
@@ -110,14 +110,14 @@ class Product
 }</code></pre>
             </div>
             <div class="col" style="max-width: 450px;">
-                <pre><code class="language-php">/** @Entity */
+                <pre><code class="language-php">#[Entity]
 class Feature
 {
     /**
      * Many Features have One Product.
-     * @ManyToOne(targetEntity="Product", inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
      */
+     #[ManyToOne(targetEntity: "Product", inversedBy: "features")]
+     #[JoinColumn(name: "product_id", referencedColumnName: "id")]
     private $product;
 }</code></pre>
             </div>
@@ -131,14 +131,14 @@ class Feature
                 <h4>Owning side</h4>
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-/** @Entity */
+#[Entity]
 class User
 {
     /**
      * Many Users have Many Groups.
-     * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(name="users_groups")
      */
+    #[ManyToMany(targetEntity: "Group", inversedBy: "users")]
+    #[JoinTable(name: "users_groups")]
     private $groups;
 
     public function __construct() {
@@ -150,13 +150,13 @@ class User
                 <h4>Inverse side</h4>
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-/** @Entity */
+#[Entity]
 class Group
 {
     /**
      * Many Groups have Many Users.
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: "User", mappedBy: "groups")]
     private $users;
 
     public function __construct() {

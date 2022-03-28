@@ -6,10 +6,10 @@
 
     <section>
         <h3>Prérequis</h3>
-        <p>Symfony 5+ :</p>
+        <p>Symfony 6+ :</p>
         <ul style="display: block;">
-            <li>PHP 7.2.5 +</li>
-            <li>Composer / Symfony installer</li>
+            <li>PHP 8.0.2 +</li>
+            <li>Composer / Symfony CLI</li>
             <li>Plusieurs modules PHP (Ctype, iconv, JSON...)</li>
         </ul>
         <p>Doctrine :</p>
@@ -18,7 +18,7 @@
             <li>MySQL / SQLite / Oracle...</li>
         </ul>
         <footer>
-            <a href="http://symfony.com/doc/current/reference/requirements.html" target="_blank" class="info">Requirements</a>
+            <a href="https://symfony.com/doc/current/setup.html#technical-requirements" target="_blank" class="info">Requirements</a>
         </footer>
     </section>
 
@@ -30,7 +30,7 @@
                     <li>Gestionnaire de dépendances</li>
                     <li>Packagist : <a href="https://packagist.org" target="_blank">https://packagist.org</a></li>
                 </ul>
-                <pre><code class="language-bash">composer require friendsofsymfony/user-bundle "~1.3"
+                <pre><code class="language-bash">composer require symfony/console
 composer update
 </code></pre>
             </div>
@@ -52,10 +52,10 @@ composer update
                 </ul>
             </li>
             <li>
-                Avec Symfony Installer (<del>deprecated</del> de retour dans la V5)
+                Avec Symfony CLI (<del>deprecated</del> de retour dans la V5)
                 <ul>
-                    <li>Installer l’application Symfony Installer : <a href="https://symfony.com/doc/3.4/setup.html#creating-symfony-applications" target="_blank">https://symfony.com/doc/3.4/setup.html#creating-symfony-applications</a></li>
-                    <li><code class="language-bash">symfony new my_project_name --full</code></li>
+                    <li>Installer l’application Symfony Installer : <a href="https://symfony.com/doc/current/setup.html#creating-symfony-applications" target="_blank">https://symfony.com/doc/current/setup.html#creating-symfony-applications</a></li>
+                    <li><code class="language-bash">symfony new my_project_name --webapp</code></li>
                 </ul>
             </li>
         </ul>
@@ -118,9 +118,9 @@ composer update
     </section>
 
     <section>
-        <h3>Annotations vs YAML vs XML</h3>
+        <h3>Attributs vs Annotations vs YAML vs XML</h3>
         <p>Symfony permet d’utiliser différentes techniques afin de définir des <strong>routes</strong>, des contraintes de <strong>sécurités</strong>, le <strong>mapping</strong> du modèle…</p>
-        <p>Cependant, Symfony <strong>recommande fortement</strong> l’utilisation des annotations dans sa documentation principalement pour leurs <strong>simplicité</strong> d’utilisation.</p>
+        <p>Cependant, Symfony <strong>recommande fortement</strong> l’utilisation des attrbuts dans sa documentation principalement pour leurs <strong>simplicité</strong> d’utilisation.</p>
     </section>
 
     <section>

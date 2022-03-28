@@ -163,10 +163,8 @@ $admin->setPassword($encodedPassword);</code></pre>
     <section>
         <h3>Register</h3>
         <p>Pour gérer l’enregistrement des nouveaux utilisateurs, ajouter une propriété plainPassword dans l’entité User (cette propriété ne sera pas persistée en base de données) et générer les accesseurs (get / set) :</p>
-        <pre><code class="language-php">/**
- * @Assert\NotBlank()
- * @Assert\Length(max=4096)
-*/
+        <pre><code class="language-php">#[Assert\NotBlank]
+#[Assert\Length(max: 4096)]
 private $plainPassword;</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/doctrine/registration_form.html" target="_blank" class="info">Registration Form</a>
@@ -193,9 +191,7 @@ private $plainPassword;</code></pre>
     <section>
         <h3>Register</h3>
         <p>Créer ensuite un controller RegistrationController avec l’action register :</p>
-        <pre style="max-height: 500px;"><code class="language-php">/**
- * @Route("/register", name="user_registration")
- */
+        <pre style="max-height: 500px;"><code class="language-php">#[Route("/register", name: "user_registration")]
 public function registerAction(Request $request) {
     $user = new User();
     $form = $this->createForm(UserType::class, $user);
@@ -238,9 +234,7 @@ public function registerAction(Request $request) {
     <section>
         <h3>Sécuriser un controller</h3>
         <p>Il est possible de définir des règles de sécurités sur un controller :</p>
-        <pre><code class="language-php">/**
- * @Security("has_role('ROLE_ADMIN')")
- */
+        <pre><code class="language-php">#[IsGranted("ROLE_ADMIN"))]
 public function deleteAction($id)</code></pre>
         <p>Ou bien plus spécifiquement à l’intérieur d’un controller :</p>
         <pre><code class="language-php">public function helloAction($name) {
