@@ -69,13 +69,12 @@ php bin/console doctrine:generate:entities AppBundle</code></pre>
             <li>Génération de la classe Repository</li>
             <li>Génération du constructeur</li>
         </ul>
-        <pre><code class="language-bash">php bin/console doctrine:generate:entities AppBundle</code></pre>
     </section>
 
     <section>
         <h3>Code First</h3>
         <p>Génération du fichier SQL de migration :</p>
-        <pre><code class="language-bash">php bin/console doctrine:migrations:diff</code></pre>
+        <pre><code class="language-bash">php bin/console make:migration</code></pre>
         <p>Mise à jour de la base de données :</p>
         <pre><code class="language-bash">php bin/console doctrine:migrations:migrate</code></pre>
     </section>
@@ -102,7 +101,7 @@ class Product
      * One Product has Many Features.
      */
     #[OneToMany(targetEntity: "Feature", mappedBy: "product")]
-    private $features;
+    private Collection $features;
 
     public function __construct() {
         $this->features = new ArrayCollection();
@@ -118,7 +117,7 @@ class Feature
      */
      #[ManyToOne(targetEntity: "Product", inversedBy: "features")]
      #[JoinColumn(name: "product_id", referencedColumnName: "id")]
-    private $product;
+    private Product $product;
 }</code></pre>
             </div>
         </div>
@@ -139,7 +138,7 @@ class User
      */
     #[ManyToMany(targetEntity: "Group", inversedBy: "users")]
     #[JoinTable(name: "users_groups")]
-    private $groups;
+    private Collection $groups;
 
     public function __construct() {
         $this->groups = new ArrayCollection();
@@ -157,7 +156,7 @@ class Group
      * Many Groups have Many Users.
      */
     #[ManyToMany(targetEntity: "User", mappedBy: "groups")]
-    private $users;
+    private Collection $users;
 
     public function __construct() {
         $this->users = new ArrayCollection();
@@ -177,7 +176,7 @@ class Group
         <h3>Ajouter</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer l’Entity Manager de Doctrine
-$em = $this->getDoctrine()->getManager();
+$em = $doctrine->getManager();
 
 // Création d’un nouveau produit
 $product = new Product();
@@ -194,7 +193,7 @@ $em->flush();</code></pre>
         <h3>Modifier</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
-$repository = $this->getDoctrine()->getRepository(Product::class);
+$repository = $doctrine->getRepository(Product::class);
 
 // Récupérer le produit id = 3
 $product = $repository->find(3);
@@ -210,7 +209,7 @@ $em->flush();</code></pre>
         <h3>Supprimer</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
-$repository = $this->getDoctrine()->getRepository(Product::class);
+$repository = $doctrine->getRepository(Product::class);
 
 // Récupérer le produit id = 3
 $product = $repository->find(3);
@@ -248,8 +247,7 @@ $em->flush();</code></pre>
         <div class="container">
             <div class="col">
                 <h4>DQL</h4>
-                <pre><code class="language-php">$this->getEntityManager()
-            ->createQuery('
+                <pre><code class="language-php">$em->createQuery('
                 SELECT p
                 FROM AppBundle:Post p
                 WHERE p.publishedAt <= :now
@@ -259,7 +257,7 @@ $em->flush();</code></pre>
             </div>
             <div class="col">
                 <h4>QueryBuilder</h4>
-                <pre><code class="language-php">$qb = $this->getEntityManager()->createQueryBuilder();
+                <pre><code class="language-php">$qb = $em->createQueryBuilder();
 
 
 $qb->select('p')
