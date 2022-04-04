@@ -39,7 +39,7 @@
         <p>Dans l'exemple suivant, nous allons tester la méthode <code class="language-php">getFullName()</code> d'une entité <code class="language-php">Person</code>.</p>
         <p>Nous allons commencer par générer la classe PersonTest en utilisant MakerBundle :</p>
         <pre><code class="language-php">php bin/console make:test</code></pre>
-        <p>Saisissez ensuite les options <code class="language-bash">TestCase</code> puis <code class="language-bash">PersonTest</code>.</p>
+        <p>Saisissez ensuite les options <code class="language-bash">TestCase</code> puis <code class="language-bash">PersonUnitTest</code>.</p>
     </section>
 
     <section>
@@ -68,6 +68,59 @@ class DoctorTest extends TestCase
         <h3>Tests Unitaires</h3>
         <p>Enfin, vous pouvez exécuter les tests avec la commande suivante :</p>
         <pre><code class="language-bash">php bin/phpunit</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests d'Intégration</h3>
+        <pre><code class="language-php">php bin/console make:test</code></pre>
+        <p>Saisissez ensuite les options <code class="language-bash">KernelTestCase</code> puis <code class="language-bash">PersonIntegretionTest</code>.</p>
+    </section>
+
+    <section>
+        <h3>Tests d'Intégration</h3>
+        <p>Nous allons maintenant configurer l'environnement de test et plus particulièrement la connexion à la base de données en créant un fichier <code>.env.test</code> :</p>
+        <pre><code class="language-dotenv">DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name_test?serverVersion=5.7"</code></pre>
+        <p>Puis nous allons créer la base de données avec les données de test :</p>
+        <pre><code class="language-bash">php bin/console --env=test doctrine:database:create
+php bin/console --env=test doctrine:migration:migrate
+php bin/console --env=test doctrine:fixtures:load</code></pre>
+        <p>Nous allons également utiliser un package pour s'assurer que la base de données soit ré-initialisée avant chaque test :</p>
+        <pre><code class="language-bash">composer require --dev dama/doctrine-test-bundle</code></pre>
+        <pre><code class="language-xml">&lt;!-- phpunit.xml.dist --&gt;
+&lt;phpunit&gt;
+    &lt;extensions&gt;
+        &lt;extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/&gt;
+    &lt;/extensions&gt;
+&lt;/phpunit&gt;</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests d'Intégration</h3>
+        <pre><code class="language-php">class PersonIntegretionTest extends KernelTestCase
+{
+    private ?EntityManager $entityManager;
+
+    protected function setUp(): void
+    {
+        $kernel = self::bootKernel();
+        $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+    }
+
+    public function testDoctorFindAll(): void
+    {
+        $persons = $this->entityManager->getRepository(Person::class)->findAll();
+        $this->assertCount(3, $persons);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // doing this is recommended to avoid memory leaks
+        $this->entityManager->close();
+        $this->entityManager = null;
+    }
+}</code></pre>
     </section>
 
 </section>

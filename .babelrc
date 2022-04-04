@@ -1,7 +1,7 @@
 {
   "plugins": [
     ["prismjs", {
-      "languages": ["bash", "php", "twig", "yaml"],
+      "languages": ["bash", "php", "twig", "yaml", "xml"],
       "plugins": ["line-numbers"],
       "theme": "tomorrow",
       "css": true
