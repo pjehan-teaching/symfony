@@ -1,0 +1,73 @@
+<section id="test">
+
+    <section>
+        <h2>Tests</h2>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <p>Afin de pouvoir créer nos tests, nous allons commencer par installer les packages nécessaires :</p>
+        <pre><code class="language-bash">composer require --dev symfony/test-pack</code></pre>
+    </section>
+
+    <section>
+        <h3>3 types de tests</h3>
+        <ul>
+            <li><strong>Tests unitaires</strong> : Permet de tester de manière individuelle une classe.</li>
+            <li><strong>Tests d'intégration</strong> : Permet de tester un ensemble de classes pouvant intéragir avec le conteneur de services de Symfony.</li>
+            <li><strong>Tests d'application</strong> : Permet de tester une application dans son ensemble en réalisant des requête HTTP et en vérifiant les données retournées par celles-ci.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>PHPUnit</h3>
+        <div class="container">
+            <div class="col">
+                <p>
+                    PHPUnit est un package PHP permettant d'écrire des tests unitaires en PHP.
+                </p>
+            </div>
+            <div class="col">
+                <img src="/assets/images/phunit.png" alt="PHPUnit">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Tests Unitaires</h3>
+        <p>Les tests unitaires ont pour objectif de tester de manière individuelle le comportement d'une classe.</p>
+        <p>Dans l'exemple suivant, nous allons tester la méthode <code class="language-php">getFullName()</code> d'une entité <code class="language-php">Person</code>.</p>
+        <p>Nous allons commencer par générer la classe PersonTest en utilisant MakerBundle :</p>
+        <pre><code class="language-php">php bin/console make:test</code></pre>
+        <p>Saisissez ensuite les options <code class="language-bash">TestCase</code> puis <code class="language-bash">PersonTest</code>.</p>
+    </section>
+
+    <section>
+        <h3>Tests Unitaires</h3>
+        <p>Modifiez ensuite le fichier PHP généré pour tester la méthode <code class="language-php">getFullName()</code> :</p>
+        <pre><code class="language-php"><?php
+namespace App\Tests;
+
+use App\Entity\Doctor;
+use PHPUnit\Framework\TestCase;
+
+class DoctorTest extends TestCase
+{
+    public function testFullName(): void
+    {
+        $doctor = new Doctor();
+        $doctor->setFirstName('John');
+        $doctor->setLastName('Doe');
+
+        $this->assertSame('John Doe', $doctor->getFullName());
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests Unitaires</h3>
+        <p>Enfin, vous pouvez exécuter les tests avec la commande suivante :</p>
+        <pre><code class="language-bash">php bin/phpunit</code></pre>
+    </section>
+
+</section>
