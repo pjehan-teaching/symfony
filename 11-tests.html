@@ -123,4 +123,52 @@ php bin/console --env=test doctrine:fixtures:load</code></pre>
 }</code></pre>
     </section>
 
+    <section>
+        <h3>Tests d'Application</h3>
+        <pre><code class="language-php">php bin/console make:test</code></pre>
+        <p>Saisissez ensuite les options <code class="language-bash">WebTestCase</code> puis <code class="language-bash">PersonControllerTest</code>.</p>
+    </section>
+
+    <section>
+        <h3>Tests d'Application</h3>
+        <pre><code class="language-php">class PersonControllerTest extends WebTestCase
+{
+    public function testSomething(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/person');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Persons list');
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests d'Application</h3>
+        <p>Il sera alors possible de naviguer sur les différentes pages et de vérifier si le contenu de celle-ci est correct.</p>
+        <p>La variable <code class="language-php">$client</code> permet d'effectuer de nombreuses actions telles que :</p>
+        <ul>
+            <li>
+                Parcourir le site :
+                <code class="language-php">$client->back();</code>
+                <code class="language-php">$client->forward();</code>
+                <code class="language-php">$client->reload();</code>
+            </li>
+            <li>
+                Suivre des redirections :
+                <code class="language-php">$client->followRedirect();</code>
+            </li>
+            <li>
+                Connecter un utilisateur :
+                <code class="language-php">$client->loginUser();</code>
+            </li>
+            <li>
+                Faire des requêtes AJAX :
+                <code class="language-php">$client->xmlHttpRequest();</code>
+            </li>
+            <li>...</li>
+        </ul>
+    </section>
+
 </section>
