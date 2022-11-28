@@ -38,6 +38,11 @@ composer update
                 <img src="assets/images/composer.png" alt="Composer">
             </div>
         </div>
+        <footer>
+            <a href="https://getcomposer.org/download/" target="_blank" class="info">
+                Télécharger Composer
+            </a>
+        </footer>
     </section>
 
     <section>
@@ -48,7 +53,7 @@ composer update
                 <ul>
                     <li>Installer Composer : <a href="https://getcomposer.org/doc/00-intro.md" target="_blank">https://getcomposer.org/doc/00-intro.md</a></li>
                     <li><code class="language-bash">composer create-project symfony/skeleton my-project</code> <a href="https://github.com/symfony/skeleton" target="_blank">skeleton</a></li>
-                    <li><code class="language-bash">composer create-project symfony/website-skeleton my-project</code> <a href="https://github.com/symfony/website-skeleton" target="_blank">website-skeleton</a></li>
+                    <li><code class="language-bash">composer require webapp</code></li>
                 </ul>
             </li>
             <li>
@@ -71,6 +76,10 @@ composer update
             <li><code class="language-bash">composer require requirements-checker</code></li>
             <li><a href="http://localhost/check.php" target="_blank">http://localhost/check.php</a></li>
             <li><code class="language-bash">composer remove requirements-checker</code></li>
+        </ul>
+        <p>Ou bien avec le CLI de Symfony :</p>
+        <ul style="display: block;">
+            <li><code class="language-bash">symfony check:requirements</code></li>
         </ul>
         <footer>
             <a href="http://symfony.com/doc/current/reference/requirements.html" target="_blank" class="info">Requirements</a>
