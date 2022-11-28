@@ -48,18 +48,18 @@
         <pre><code class="language-php"><?php
 namespace App\Tests;
 
-use App\Entity\Doctor;
+use App\Entity\Person;
 use PHPUnit\Framework\TestCase;
 
-class DoctorTest extends TestCase
+class PersonTest extends TestCase
 {
     public function testFullName(): void
     {
-        $doctor = new Doctor();
-        $doctor->setFirstName('John');
-        $doctor->setLastName('Doe');
+        $person = new Person();
+        $person->setFirstName('John');
+        $person->setLastName('Doe');
 
-        $this->assertSame('John Doe', $doctor->getFullName());
+        $this->assertSame('John Doe', $person->getFullName());
     }
 }</code></pre>
     </section>
@@ -73,7 +73,7 @@ class DoctorTest extends TestCase
     <section>
         <h3>Tests d'Intégration</h3>
         <pre><code class="language-php">php bin/console make:test</code></pre>
-        <p>Saisissez ensuite les options <code class="language-bash">KernelTestCase</code> puis <code class="language-bash">PersonIntegretionTest</code>.</p>
+        <p>Saisissez ensuite les options <code class="language-bash">KernelTestCase</code> puis <code class="language-bash">PersonIntegrationTest</code>.</p>
     </section>
 
     <section>
@@ -106,7 +106,7 @@ php bin/console --env=test doctrine:fixtures:load</code></pre>
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
     }
 
-    public function testDoctorFindAll(): void
+    public function testPersonFindAll(): void
     {
         $persons = $this->entityManager->getRepository(Person::class)->findAll();
         $this->assertCount(3, $persons);
