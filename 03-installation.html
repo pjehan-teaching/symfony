@@ -6,9 +6,9 @@
 
     <section>
         <h3>Prérequis</h3>
-        <p>Symfony 6+ :</p>
+        <p>Symfony 7+ :</p>
         <ul style="display: block;">
-            <li>PHP 8.0.2 +</li>
+            <li>PHP 8.2 +</li>
             <li>Composer / Symfony CLI</li>
             <li>Plusieurs modules PHP (Ctype, iconv, JSON...)</li>
         </ul>
@@ -64,6 +64,10 @@ composer update
                 </ul>
             </li>
         </ul>
+        <p>
+            Le drapeau <code class="language-bash">--webapp</code> permet d'installer un projet Symfony avec un
+            ensemble de packages recommandés pour le développement d'applications web (Twig, Doctrine, Maker...).
+        </p>
         <footer>
             <a href="https://symfony.com/doc/current/setup.html" target="_blank" class="info">Setup</a>
         </footer>
@@ -142,6 +146,7 @@ composer update
         <h3>Console</h3>
         <p>Symfony propose une interface en ligne de commande ou CLI (Command Line Interface).</p>
         <pre><code class="language-bash">php bin/console</code></pre>
+        <pre><code class="language-bash">symfony console</code></pre>
         <p>Cette interface est très utile pour :</p>
         <ul>
             <li>Nettoyer le cache</li>
@@ -163,7 +168,7 @@ composer update
 
     <section>
         <h3>Serveur PHP</h3>
-        <p>Symfony propose une interaface en ligne de commande permettant de faciliter l'utilisation du serveur PHP :</p>
+        <p>Symfony propose une interface en ligne de commande permettant de faciliter l'utilisation du serveur PHP :</p>
         <pre><code class="language-bash">symfony server:start</code></pre>
         <p>Vous pouvez ensuite démarrer / stopper le serveur de cette façon :</p>
         <pre><code class="language-bash">symfony server:start -d
@@ -171,6 +176,22 @@ php symfony server:stop</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/setup/built_in_web_server.html" target="_blank" class="info">Symfony built-in Web Server</a>
         </footer>
+    </section>
+
+    <section>
+        <h3>Serveur Apache</h3>
+        <p>
+            Pour utiliser Symfony avec Apache, il est nécessaire de configurer le serveur pour rediriger toutes les
+            requêtes vers le fichier <strong>public/index.php</strong>.
+        </p>
+        <p>
+            Pour cela, vous pouvez installer le composant <strong>symfony/apache-pack</strong> :
+        </p>
+        <pre><code class="language-bash">composer require symfony/apache-pack</code></pre>
+        <p>
+            Ce package va simplement utiliser Symfony Flex pour ajouter un fichier <strong>.htaccess</strong>
+            dans le dossier <strong>public</strong> de votre projet.
+        </p>
     </section>
 
     <section>
