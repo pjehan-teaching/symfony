@@ -12,11 +12,15 @@
                     <li>Framework PHP Open Source</li>
                     <li>~ 1500 contributeurs sur GitHub</li>
                     <li>Créer en 2005 par Fabien Potencier / SensioLabs</li>
+                    <li>Version 1 sortie en 2007</li>
                     <li>Version 2 sortie en 2011</li>
                     <li>Version 3 sortie en 2015</li>
                     <li>Version 4 sortie fin 2017</li>
                     <li>Version 5 sortie fin 2019</li>
+                    <li>Version 5.4 (LTS) sortie fin 2021</li>
                     <li>Version 6 sortie fin 2021</li>
+                    <li>Version 6.4 (LTS) sortie fin 2023</li>
+                    <li>Version 7 sortie fin 2023</li>
                 </ul>
             </div>
             <div class="col">
@@ -38,47 +42,56 @@
 
     <section>
         <h3>Roadmap</h3>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 855 530">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 855 530">
             <!-- this chart was originally inspired by http://php.net/supported-versions.php -->
-            <style type="text/css">
+            <style>
 
                 :root {
+                    --font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                    --font-size-md: 16px;
+                    --text-color: #1f2937;
                     --chart-grid-horizontal-line-color: #d1d5db;
-                    --chart-grid-vertical-line-color: #b1b6c0;
+                    --chart-grid-vertical-line-color: #9ca3af;
                     --chart-red-color: #dc2626;
                     --chart-yellow-color: #facc15;
                     --chart-green-color: #16a34a;
-                    --font-size-md: 16px;
+                    --chart-gray-color: #9ca3af;
+                    --chart-transparent-color: #fff;
                 }
                 .dark-theme {
-                    --chart-grid-horizontal-line-color: var(--gray-600);
-                    --chart-grid-vertical-line-color: var(--gray-500);
-                    --chart-red-color: var(--red-700);
-                    --chart-yellow-color: var(--yellow-600);
-                    --chart-green-color: var(--green-700);
+                    --text-color: #d1d5db;
+                    --chart-grid-horizontal-line-color: #4b5563;
+                    --chart-grid-vertical-line-color: #6b7280;
+                    --chart-red-color: #b91c1c;
+                    --chart-yellow-color: #ca8a04;
+                    --chart-green-color: #15803d;
+                    --chart-gray-color: #6b7280;
+                    --chart-transparent-color: #1f2937;
                 }
 
                 text { fill: var(--text-color); font-family: var(--font-family-base); font-size: var(--font-size-md); }
                 .legend text { fill: var(--text-color) !important; font-size: 15px; }
 
-                .branches rect { rx: 5; }
+                .branches rect { rx: 5px; }
 
                 g.eol rect, .branches rect.eol { fill: var(--chart-red-color); }
+                .branches rect.maintenance.eol { fill: var(--chart-gray-color); }
                 g.eol text { fill: #fff; }
 
+                .branches rect.security { fill: var(--chart-yellow-color); }
                 g.eom rect, .branches rect.eom { fill: var(--chart-yellow-color); }
                 g.eom text { fill: #18171b; }
 
                 g.stable rect, .branches rect.stable { fill: var(--chart-green-color); }
                 g.stable text { fill: #fff; }
 
-                g.unstable rect, .branches rect.unstable { fill: #fff; stroke: var(--chart-grid-horizontal-line-color); stroke-width: 2px; }
-                g.unstable text { fill: #18171b; }
+                g.unstable rect, .branches rect.unstable { fill: var(--chart-transparent-color); stroke: var(--chart-gray-color); stroke-width: 2px; }
+                .branches rect.unstable { stroke-dasharray: 10, 5; }
                 .legend g.unstable text { fill: var(--text-color); }
 
-                .legend rect { rx: 2; }
+                .legend rect { rx: 2px; }
 
-                .branch-labels rect { rx: 5; }
+                .branch-labels rect { rx: 5px; }
                 .branch-labels text { dominant-baseline: central; text-anchor: middle; }
                 .branches line { stroke: var(--chart-grid-horizontal-line-color); stroke-width: 1px; stroke-dasharray: 4, 6; }
 
@@ -90,6 +103,7 @@
 
                 .branches a:hover, .branch-labels a:hover,
                 .branch-labels a:hover g.unstable rect { cursor: pointer; stroke-width: 2px; stroke: var(--link-color); stroke-linecap: round; text-decoration: none; }
+                .branches a:hover rect { stroke-dasharray: none; stroke: var(--link-color); }
                 .branch-labels a:hover text { stroke-width: 0; }
 
             </style>
@@ -97,170 +111,230 @@
             <g class="years">
                 <line x1="90" y1="30" x2="90" y2="440"></line>
                 <text x="90" y="20">
-                    2020
+                    2023
                 </text>
-                <line x1="210.24969882817" y1="30" x2="210.24969882817" y2="440"></line>
-                <text x="210.24969882817" y="20">
-                    2021
+                <line x1="209.92114773847" y1="30" x2="209.92114773847" y2="440"></line>
+                <text x="209.92114773847" y="20">
+                    2024
                 </text>
                 <line x1="330.17084656664" y1="30" x2="330.17084656664" y2="440"></line>
                 <text x="330.17084656664" y="20">
-                    2022
+                    2025
                 </text>
                 <line x1="450.09199430511" y1="30" x2="450.09199430511" y2="440"></line>
                 <text x="450.09199430511" y="20">
-                    2023
+                    2026
                 </text>
                 <line x1="570.01314204359" y1="30" x2="570.01314204359" y2="440"></line>
                 <text x="570.01314204359" y="20">
-                    2024
+                    2027
                 </text>
-                <line x1="690.26284087176" y1="30" x2="690.26284087176" y2="440"></line>
-                <text x="690.26284087176" y="20">
-                    2025
+                <line x1="689.93428978206" y1="30" x2="689.93428978206" y2="440"></line>
+                <text x="689.93428978206" y="20">
+                    2028
                 </text>
             </g>
 
             <g class="branches">
                 <line x1="0" y1="35" x2="855" y2="35"></line>
-                <a xlink:href="/releases/4.4" target="_blank">
-                    <rect class="stable" x="90" y="40" width="349.90691052459" height="30"></rect>
-                    <rect class="eom" x="439.90691052459" y="40" width="119.92114773847" height="30"></rect>
+                <a xlink:href="/releases/5.4" target="_blank">
+                    <rect class="maintenance eom" x="90" y="40" width="229.65721169642" height="30">
+                        <title>Security fixes only / Bugs fixed until the end of November 2024 / Security issues fixed until the end of February 2029</title>
+
+                    </rect>
+                    <rect class="security" x="319.65721169642" y="40" width="509.58274011609" height="30">
+                        <title>Security fixes only / Bugs fixed until the end of November 2024 / Security issues fixed until the end of February 2029</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="75" x2="855" y2="75"></line>
-                <a xlink:href="/releases/5.0" target="_blank">
-                    <rect class="stable" x="90" y="80" width="69.981382104917" height="30"></rect>
-                    <rect class="eom" x="159.98138210492" y="80" width="0" height="30"></rect>
+                <a xlink:href="/releases/6.0" target="_blank">
+                    <rect class="maintenance eol" x="90" y="80" width="9.8565326908334" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2023</title>
+
+                    </rect>
+                    <rect class="security" x="99.856532690833" y="80" width="0" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2023</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="115" x2="855" y2="115"></line>
-                <a xlink:href="/releases/5.1" target="_blank">
-                    <rect class="stable" x="139.93976563356" y="120" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="220.4347826087" y="120" width="0" height="30"></rect>
+                <a xlink:href="/releases/6.1" target="_blank">
+                    <rect class="maintenance eol" x="90" y="120" width="9.8565326908334" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2023</title>
+
+                    </rect>
+                    <rect class="security" x="99.856532690833" y="120" width="0" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2023</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="155" x2="855" y2="155"></line>
-                <a xlink:href="/releases/5.2" target="_blank">
-                    <rect class="stable" x="200.06461504764" y="160" width="79.837914795751" height="30"></rect>
-                    <rect class="eom" x="279.90252984339" y="160" width="0" height="30"></rect>
+                <a xlink:href="/releases/6.2" target="_blank">
+                    <rect class="maintenance eol" x="90" y="160" width="69.324279925528" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of July 2023</title>
+
+                    </rect>
+                    <rect class="security" x="159.32427992553" y="160" width="0" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of July 2023</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="195" x2="855" y2="195"></line>
-                <a xlink:href="/releases/5.3" target="_blank">
-                    <rect class="stable" x="259.86091337203" y="200" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="340.35593034717" y="200" width="0" height="30"></rect>
+                <a xlink:href="/releases/6.3" target="_blank">
+                    <rect class="maintenance eol" x="139.61121454386" y="200" width="80.166465885445" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2024</title>
+
+                    </rect>
+                    <rect class="security" x="219.77768042931" y="200" width="0" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of January 2024</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="235" x2="855" y2="235"></line>
-                <a xlink:href="/releases/5.4" target="_blank">
-                    <rect class="stable" x="319.98576278611" y="240" width="360.09199430511" height="30"></rect>
-                    <rect class="eom" x="680.07775709123" y="240" width="119.92114773847" height="30"></rect>
+                <a xlink:href="/releases/6.4" target="_blank">
+                    <rect class="maintenance stable" x="199.73606395795" y="240" width="359.76344321542" height="30">
+                        <title>Maintained / Bugs fixed until the end of November 2026 / Security issues fixed until the end of November 2027</title>
+
+                    </rect>
+                    <rect class="security" x="559.49950717337" y="240" width="119.92114773847" height="30">
+                        <title>Maintained / Bugs fixed until the end of November 2026 / Security issues fixed until the end of November 2027</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="275" x2="855" y2="275"></line>
-                <a xlink:href="/releases/6.0" target="_blank">
-                    <rect class="stable" x="319.98576278611" y="280" width="140.29131529953" height="30"></rect>
-                    <rect class="eom" x="460.27707808564" y="280" width="0" height="30"></rect>
+                <a xlink:href="/releases/7.0" target="_blank">
+                    <rect class="maintenance eol" x="199.73606395795" y="280" width="79.837914795751" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of July 2024</title>
+
+                    </rect>
+                    <rect class="security" x="279.5739787537" y="280" width="0" height="30">
+                        <title>Unmaintained / Bugs and security issues fixed until the end of July 2024</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="315" x2="855" y2="315"></line>
-                <a xlink:href="/releases/6.1" target="_blank">
-                    <rect class="stable" x="379.7820611105" y="320" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="460.27707808564" y="320" width="0" height="30"></rect>
+                <a xlink:href="/releases/7.1" target="_blank">
+                    <rect class="maintenance stable" x="259.86091337203" y="320" width="80.166465885445" height="30">
+                        <title>Maintained / Bugs and security issues fixed until the end of January 2025</title>
+
+                    </rect>
+                    <rect class="security" x="340.02737925747" y="320" width="0" height="30">
+                        <title>Maintained / Bugs and security issues fixed until the end of January 2025</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="355" x2="855" y2="355"></line>
-                <a xlink:href="/releases/6.2" target="_blank">
-                    <rect class="stable" x="439.90691052459" y="360" width="79.837914795751" height="30"></rect>
-                    <rect class="eom" x="519.74482532034" y="360" width="0" height="30"></rect>
+                <a xlink:href="/releases/7.2" target="_blank">
+                    <rect class="maintenance stable" x="319.98576278611" y="360" width="79.509363706056" height="30">
+                        <title>Maintained / Bugs and security issues fixed until the end of July 2025</title>
+
+                    </rect>
+                    <rect class="security" x="399.49512649217" y="360" width="0" height="30">
+                        <title>Maintained / Bugs and security issues fixed until the end of July 2025</title>
+
+                    </rect>
                 </a>
                 <line x1="0" y1="395" x2="855" y2="395"></line>
-                <a xlink:href="/releases/6.3" target="_blank">
-                    <rect class="stable" x="499.70320884898" y="400" width="80.49501697514" height="30"></rect>
-                    <rect class="eom" x="580.19822582412" y="400" width="0" height="30"></rect>
+                <a xlink:href="/releases/7.3" target="_blank">
+                    <rect class="maintenance unstable" x="379.7820611105" y="400" width="80.166465885445" height="30">
+                        <title>Under development / Bugs and security issues fixed until the end of January 2026</title>
+
+                    </rect>
+                    <rect class="security" x="459.94852699595" y="400" width="0" height="30">
+                        <title>Under development / Bugs and security issues fixed until the end of January 2026</title>
+
+                    </rect>
                 </a>
             </g>
 
             <g class="branch-labels">
-                <a xlink:href="/releases/4.4" target="_blank">
-                    <g class="stable">
+                <a xlink:href="/releases/5.4" target="_blank">
+                    <g class="eom">
                         <rect x="1" y="40" width="45" height="30"></rect>
                         <text x="22.5" y="55">
-                            4.4
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.0" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="80" width="45" height="30"></rect>
-                        <text x="22.5" y="95">
-                            5.0
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.1" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="120" width="45" height="30"></rect>
-                        <text x="22.5" y="135">
-                            5.1
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.2" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="160" width="45" height="30"></rect>
-                        <text x="22.5" y="175">
-                            5.2
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.3" target="_blank">
-                    <g class="eol">
-                        <rect x="1" y="200" width="45" height="30"></rect>
-                        <text x="22.5" y="215">
-                            5.3
-                        </text>
-                    </g>
-                </a>
-                <a xlink:href="/releases/5.4" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="240" width="45" height="30"></rect>
-                        <text x="22.5" y="255">
                             5.4
                         </text>
                     </g>
                 </a>
                 <a xlink:href="/releases/6.0" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="280" width="45" height="30"></rect>
-                        <text x="22.5" y="295">
+                    <g class="eol">
+                        <rect x="1" y="80" width="45" height="30"></rect>
+                        <text x="22.5" y="95">
                             6.0
                         </text>
                     </g>
                 </a>
                 <a xlink:href="/releases/6.1" target="_blank">
-                    <g class="stable">
-                        <rect x="1" y="320" width="45" height="30"></rect>
-                        <text x="22.5" y="335">
+                    <g class="eol">
+                        <rect x="1" y="120" width="45" height="30"></rect>
+                        <text x="22.5" y="135">
                             6.1
                         </text>
                     </g>
                 </a>
                 <a xlink:href="/releases/6.2" target="_blank">
-                    <g class="unstable">
-                        <rect x="1" y="360" width="45" height="30"></rect>
-                        <text x="22.5" y="375">
+                    <g class="eol">
+                        <rect x="1" y="160" width="45" height="30"></rect>
+                        <text x="22.5" y="175">
                             6.2
                         </text>
                     </g>
                 </a>
                 <a xlink:href="/releases/6.3" target="_blank">
+                    <g class="eol">
+                        <rect x="1" y="200" width="45" height="30"></rect>
+                        <text x="22.5" y="215">
+                            6.3
+                        </text>
+                    </g>
+                </a>
+                <a xlink:href="/releases/6.4" target="_blank">
+                    <g class="stable">
+                        <rect x="1" y="240" width="45" height="30"></rect>
+                        <text x="22.5" y="255">
+                            6.4
+                        </text>
+                    </g>
+                </a>
+                <a xlink:href="/releases/7.0" target="_blank">
+                    <g class="eol">
+                        <rect x="1" y="280" width="45" height="30"></rect>
+                        <text x="22.5" y="295">
+                            7.0
+                        </text>
+                    </g>
+                </a>
+                <a xlink:href="/releases/7.1" target="_blank">
+                    <g class="stable">
+                        <rect x="1" y="320" width="45" height="30"></rect>
+                        <text x="22.5" y="335">
+                            7.1
+                        </text>
+                    </g>
+                </a>
+                <a xlink:href="/releases/7.2" target="_blank">
+                    <g class="stable">
+                        <rect x="1" y="360" width="45" height="30"></rect>
+                        <text x="22.5" y="375">
+                            7.2
+                        </text>
+                    </g>
+                </a>
+                <a xlink:href="/releases/7.3" target="_blank">
                     <g class="unstable">
                         <rect x="1" y="400" width="45" height="30"></rect>
                         <text x="22.5" y="415">
-                            6.3
+                            7.3
                         </text>
                     </g>
                 </a>
             </g>
 
             <g class="today">
-                <line x1="438.9212572555" y1="30" x2="438.9212572555" y2="450"></line>
-                <text x="438.9212572555" y="464">
-                    Today: November 28, 2022
+                <line x1="331.81360201511" y1="30" x2="331.81360201511" y2="450"></line>
+                <text x="331.81360201511" y="464">
+                    Today: January 6, 2025
                 </text>
             </g>
 
@@ -365,6 +439,60 @@
     <section>
         <h3>MVC</h3>
         <img src="assets/images/mvc.png" alt="MVC">
+    </section>
+
+    <section>
+        <h3>Alternatives</h3>
+        <div class="container">
+            <div class="col">
+                <h4>Autres Frameworks PHP</h4>
+                <ul>
+                    <li>Laravel</li>
+                    <li>Zend</li>
+                    <li>CodeIgniter</li>
+                    <li>CakePHP</li>
+                    <li>Yii</li>
+                    <li>Phalcon</li>
+                    <li>Flight</li>
+                    <li>Slim</li>
+                    <li>...</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>Autres Langages</h4>
+                <ul>
+                    <li>Node.js (Express, Koa, Sails, Meteor...)</li>
+                    <li>Ruby on Rails</li>
+                    <li>Python (Django, Flask...)</li>
+                    <li>Java (Spring, Play...)</li>
+                    <li>ASP.NET</li>
+                    <li>...</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Laravel</h3>
+        <div class="container">
+            <div class="col">
+                <img src="assets/images/laravel.png" alt="Laravel">
+            </div>
+            <div class="col">
+                <p>
+                    À l'<strong>international</strong>, Laravel est le framework PHP le plus populaire.
+                    Il est plus simple à prendre en main que Symfony.
+                </p>
+                <p>
+                    Cependant, <strong>Symfony</strong> est plus utilisé en France et son utilisation est plus
+                    recommandée pour les <strong>projets complexes</strong>.
+                </p>
+                <p>
+                    On peut également noter que de nombreux packages de Symfony font partie des plus réutilisés sur
+                    <a href="https://packagist.org/explore/popular" target="_blank">Packagist</a>.
+                </p>
+            </div>
+        </div>
     </section>
 
 </section>
