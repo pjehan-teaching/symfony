@@ -13,7 +13,7 @@
         <h3>Où écrire ses routes ?</h3>
         <p>Une fois de plus, Symfony propose 4 méthodes pour écrire des routes :</p>
         <ol>
-            <li>Attirbuts (recommandé)</li>
+            <li>Attributs (recommandé)</li>
             <li>Annotations</li>
             <li>YAML</li>
             <li>XML</li>
@@ -27,22 +27,22 @@
     </section>
 
     <section>
-        <h3>Ecrire les routes</h3>
+        <h3>Écrire les routes</h3>
         <p>Route simple :</p>
         <pre><code class="language-php">#[Route("/test", name: "page_test")]
 public function testAction(): Response</code></pre>
         <p>Route avec paramètres :</p>
         <pre><code class="language-php">
 #[Route("/test/{title}/{username}", name: "page_test")]
-public function testAction(string $title = "Default page title", string $username): Response</code></pre>
+public function testAction(string $title, string $username): Response</code></pre>
     </section>
 
     <section>
-        <h3>Ecrire les routes</h3>
+        <h3>Écrire les routes</h3>
         <p>Route avec contraintes :</p>
         <pre><code class="language-php">#[Route("/test/{_locale}/{year}", name: "page_test", requirements=["_locale": "en|fr", "year": "\d+"])]
 public function testAction($_locale, $year)</code></pre>
-        <p>Route avec contraintes sur le méthode :</p>
+        <p>Route avec contraintes sur la méthode :</p>
         <pre><code class="language-php">#[Route("/test", name: "page_test", methods=["GET", "POST"])]
 public function testAction()</code></pre>
     </section>
@@ -59,14 +59,17 @@ public function testAction()</code></pre>
     </section>
 
     <section>
-        <h3>ParamConverter</h3>
-        <p>L’objet ParamConverter permet de convertir un paramètre.</p>
-        <p>Il permet notamment de convertir un “id” en entité sans avoir besoin de faire manuellement la requête avec l’ORM.</p>
+        <h3>MapEntity</h3>
+        <p>L'attribut MapEntity permet de convertir un paramètre.</p>
+        <p>Il permet notamment de convertir un "id" en entité sans avoir besoin de faire manuellement la requête avec l’ORM.</p>
         <pre><code class="language-php">#[Route("/book/{id}")]
-#[ParamConverter("book", class: "App:Book")]
-public function showAction(Book $book): Response</code></pre>
+public function showAction(
+    #[MapEntity(id: 'id')] Book $book
+): Response</code></pre>
         <footer>
-            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html" target="_blank" class="info">Symfony peut faire la conversion automatiquement</a>
+            <a href="https://symfony.com/doc/current/doctrine.html#automatically-fetching-objects-entityvalueresolver" target="_blank" class="info">
+                Symfony peut faire la conversion automatiquement
+            </a>
         </footer>
     </section>
 

@@ -1,0 +1,238 @@
+<section id="security">
+
+    <section>
+        <h2>Sécurité</h2>
+    </section>
+
+    <section>
+        <h3>Authentification / Autorisation</h3>
+        <p>L’<strong>authentification</strong> est le processus permettant à un utilisateur de <strong>s’authentifier / se logger</strong> sur une plateforme.</p>
+        <p>L’<strong>autorisation</strong> est une étape <strong>suivant l’authentification</strong> et permettant de vérifier les <strong>droits accordés</strong> à l’utilisateur.</p>
+        <div class="container">
+            <div class="col">
+                <img src="assets/images/authentification.png" alt="Authentification">
+            </div>
+            <div class="col">
+                <img src="assets/images/authorization.png" alt="Autorisation">
+            </div>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/security.html" target="_blank" class="info">Securité</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Installation avec Flex</h3>
+        <p>Nous allons commencer par installer le composant de sécurité en utilisant la commande flex suivante :</p>
+        <pre><code class="language-bash">composer require security</code></pre>
+        <p>Cette commande va importer le bundle SecurityBundle et créer automatiquement un fichier config/packages/security.yaml</p>
+    </section>
+
+    <section>
+        <h3>Créer une entité User</h3>
+        <p>
+            Créer une entité User en utilisant la commande <code class="language-bash">php bin/console make:user</code>.
+            Les champs id, email, roles et password seront automatiquement ajoutés et vous pourrez ajouter d'autres
+            champs si nécessaire.
+        </p>
+        <p>Mettez ensuite à jour votre base de données :</p>
+        <pre><code class="language-bash">php bin/console make:migration
+php bin/console doctrine:migrations:migrate</code></pre>
+</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/security.html#the-user" target="_blank" class="info">
+                Documentation User Entity
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Modifier les Fixtures (si nécessaire)</h3>
+        <p>Modifier les fixtures pour utiliser le service permettant de hasher les mots de passe :</p>
+        <pre><code class="language-php">use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+class UserFixtures extends Fixture implements DependentFixtureInterface
+{
+    private $hasher;
+
+    public function __construct(UserPasswordHasherInterface $hasher)
+    {
+       $this->hasher = $hasher;
+    }
+
+    public function load(ObjectManager $manager): void
+    {
+        $hashedPassword = $this->hasher->hashPassword($admin, 'admin');
+        $admin->setPassword($hashedPassword);
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <p>Définir une méthode de cryptage des mots de passe :</p>
+        <pre><code class="language-yaml">security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'</code></pre>
+        <p>Définir un provider (memory, entity, ldap ou chain) :</p>
+        <pre><code class="language-yaml">security:
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email</code></pre>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <p>Définir les paramètres principaux de sécurité :</p>
+        <pre><code class="language-yaml">security:
+        firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider</code></pre>
+        <p>Définir un espace sécurisé :</p>
+        <pre><code class="language-yaml">security:
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }</code></pre>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>Pour gérer la connexion des utilisateurs, vous pouvez utiliser la commande suivante :</p>
+        <pre><code class="language-bash">php bin/console make:security:form-login</code></pre>
+        <p>
+            Cette commande va créer un controller <code>SecurityController</code> contenant 2 actions <code>login</code> et
+            <code>logout</code>, le template Twig <code>login.html.twig</code> et le fichier de configuration
+            <code>security.yaml</code>.
+        </p>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>
+            Dans le fichier de configuration <code>security.yaml</code>, le formulaire de login sera paramétré
+            au niveau du firewall <code>main</code> :
+        </p>
+        <pre><code class="language-yaml">security:
+    firewalls:
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true</code></pre>
+        <p>
+            La même route <code>app_login</code> est utilisée pour l’affichage du formulaire et pour le traitement et
+            la sécurité CSRF est activée.
+        </p>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>
+            Le fichier <code>SecurityController</code> contient l'action <code>login</code> qui affiche le formulaire
+            de login et gère les erreurs :
+        </p>
+        <pre><code class="language-php">class SecurityController extends AbstractController
+{
+    #[Route(path: '/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils): Response
+    {
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Login</h3>
+        <p>
+            Enfin, le template <code>login.html.twig</code> contient le formulaire de login avec...
+        </p>
+        <ul>
+            <li>L'affichage des champs <code>email</code> et <code>password</code></li>
+            <li>L'affichage des erreurs</li>
+            <li>L'affichage d'un bouton de déconnexion si l'utilisateur est connecté</li>
+            <li>La gestion de la sécurité CSRF</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Logout</h3>
+        <p>
+            Dans le fichier de configuration <code>security.yaml</code>, le logout sera paramétré au niveau du firewall
+            <code>main</code> :
+        </p>
+        <pre><code class="language-yaml">security:
+    firewalls:
+        main:
+            logout:
+                path: app_logout</code></pre>
+    </section>
+
+    <section>
+        <h3>Logout</h3>
+        <p>
+            Le fichier <code>SecurityController</code> contient l'action <code>logout</code> qui gère la déconnexion :
+        </p>
+        <pre><code class="language-php">class SecurityController extends AbstractController
+{
+    #[Route(path: '/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
+    }
+}</code></pre>
+        <p>
+            La méthode <code>logout</code> peut être vide, elle sera interceptée par le firewall qui se chargera de
+            déconnecter l'utilisateur.
+        </p>
+    </section>
+
+    <section>
+        <h3>Register</h3>
+        <p>
+            Pour permettre l’inscription des utilisateurs, vous pouvez utiliser la commande suivante :
+        </p>
+        <pre><code class="language-bash">composer require symfonycasts/verify-email-bundle
+php bin/console make:registration-form</code></pre>
+        <p>
+            Cette commande va créer un controller <code>RegistrationController</code> contenant l’action <code>register</code>,
+            le formulaire d'inscription <code>RegistrationFormType</code> et le template Twig
+            <code>register.html.twig</code>.
+        </p>
+        <footer>
+            <a href="https://symfony.com/doc/7.3/security.html#security-make-registration-form" target="_blank" class="info">
+                Documentation Formulaire d'inscription
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Sécuriser un controller</h3>
+        <p>Il est possible de définir des règles de sécurités sur un controller :</p>
+        <pre><code class="language-php">#[IsGranted("ROLE_ADMIN"))]
+public function deleteAction($id)</code></pre>
+        <p>Ou bien plus spécifiquement à l’intérieur d’un controller :</p>
+        <pre><code class="language-php">public function helloAction($name) {
+    $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
+}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/security.html" target="_blank" class="info">Security Annotations</a>
+        </footer>
+    </section>
+
+</section>

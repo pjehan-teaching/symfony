@@ -23,7 +23,7 @@
     <section>
         <h3>Installation</h3>
         <pre><code class="language-bash">composer require doctrine
-php bin/console list doctrine
+php bin/console list doctrine # Voir la liste des commandes ajoutées par Doctrine
 </code></pre>
     </section>
 
@@ -44,7 +44,8 @@ php bin/console list doctrine
             <li>Model First : Model → Code → BDD</li>
             <li>Code First : Code → Model → BDD</li>
         </ul>
-        <p>Dans Symfony, le Model et le Code sont fortement liés, surtout avec l’utilisation des annotations/attirbuts.</p>
+        <p>Dans Symfony, le Model et le Code sont fortement liés, surtout avec l’utilisation des attributs.</p>
+        <p>La méthode recommandée est celle du <strong>Code First</strong>.</p>
     </section>
 
     <section>
@@ -94,13 +95,13 @@ php bin/console doctrine:generate:entities AppBundle</code></pre>
             <div class="col" style="max-width: 450px;">
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-#[Entity]
+#[ORM\Entity]
 class Product
 {
     /**
      * One Product has Many Features.
      */
-    #[OneToMany(targetEntity: "Feature", mappedBy: "product")]
+    #[ORM\OneToMany(targetEntity: Feature::class, mappedBy: "product")]
     private Collection $features;
 
     public function __construct() {
@@ -109,14 +110,14 @@ class Product
 }</code></pre>
             </div>
             <div class="col" style="max-width: 450px;">
-                <pre><code class="language-php">#[Entity]
+                <pre><code class="language-php">#[ORM\Entity]
 class Feature
 {
     /**
      * Many Features have One Product.
      */
-     #[ManyToOne(targetEntity: "Product", inversedBy: "features")]
-     #[JoinColumn(name: "product_id", referencedColumnName: "id")]
+     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "features")]
+     #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id")]
     private Product $product;
 }</code></pre>
             </div>
@@ -130,14 +131,14 @@ class Feature
                 <h4>Owning side</h4>
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-#[Entity]
+#[ORM\Entity]
 class User
 {
     /**
      * Many Users have Many Groups.
      */
-    #[ManyToMany(targetEntity: "Group", inversedBy: "users")]
-    #[JoinTable(name: "users_groups")]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: "users")]
+    #[ORM\JoinTable(name: "users_groups")]
     private Collection $groups;
 
     public function __construct() {
@@ -149,13 +150,13 @@ class User
                 <h4>Inverse side</h4>
                 <pre><code class="language-php">use Doctrine\Common\Collections\ArrayCollection;
 
-#[Entity]
+#[ORM\Entity]
 class Group
 {
     /**
      * Many Groups have Many Users.
      */
-    #[ManyToMany(targetEntity: "User", mappedBy: "groups")]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: "groups")]
     private Collection $users;
 
     public function __construct() {
@@ -168,15 +169,25 @@ class Group
 
     <section>
         <h3>Renseigner les dates de création / MàJ</h3>
-        <p>Dans une base de données, il est souvent nécessaire d’enregistrer les dates de création ou de mise à jour d’une entité.</p>
-        <p>Doctrine déclenche automatiquement des événements lorsqu’une action est effectuée sur une entité. La liste de ces actions est disponible dans la <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events" target="_blank">documentation</a> de Doctrine.</p>
+        <p>
+            Dans une base de données, il est souvent nécessaire d’enregistrer les dates de création ou de mise à jour
+            d'une entité.
+        </p>
+        <p>
+            Doctrine déclenche automatiquement des événements lorsqu’une action est effectuée sur une entité.
+            La liste de ces actions (prePersist, preRemove, postUpdate...) est disponible dans la
+            <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events" target="_blank">
+                documentation
+            </a>
+            de Doctrine.
+        </p>
     </section>
 
     <section>
         <h3>Ajouter</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer l’Entity Manager de Doctrine
-$em = $doctrine->getManager();
+public function testAction(EntityManagerInterface $em) // Injection de dépendance
 
 // Création d’un nouveau produit
 $product = new Product();
@@ -193,7 +204,7 @@ $em->flush();</code></pre>
         <h3>Modifier</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
-$repository = $doctrine->getRepository(Product::class);
+$repository = $em->getRepository(Product::class);
 
 // Récupérer le produit id = 3
 $product = $repository->find(3);
@@ -209,7 +220,7 @@ $em->flush();</code></pre>
         <h3>Supprimer</h3>
         <p>Code à ajouter dans un Controlleur :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
-$repository = $doctrine->getRepository(Product::class);
+$repository = $em->getRepository(Product::class);
 
 // Récupérer le produit id = 3
 $product = $repository->find(3);

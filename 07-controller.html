@@ -17,12 +17,46 @@
         <pre><code class="language-php">
 #[Route("/test/{title}/{username}", name: "page_test")]
 public function testAction(string $title = "Default page title", string $username): Response</code></pre>
-        <p>Il est également possible d’utiliser un converter :</p>
+        <p>Il est également possible d'utiliser MapEntity :</p>
         <pre><code class="language-php">#[Route("/book/{id}")]
-#[ParamConverter("book", class: "App:Book")]
+public function showAction(
+    #[MapEntity(id: 'id')] Book $book
+): Response</code></pre>
+        <p>
+            Ou plus simplement :
+        </p>
+        <pre><code class="language-php">#[Route("/book/{id}")]
 public function showAction(Book $book): Response</code></pre>
         <footer>
-            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html" target="_blank" class="info">ParamConverter</a>
+            <a href="https://symfony.com/doc/current/doctrine.html#doctrine-entity-value-resolver" target="_blank" class="info">
+                MapEntity
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Autowiring</h3>
+        <p>
+            Symfony utilise un système de <strong>services</strong> pour gérer les instances de classes.
+            Cela permet de ne pas avoir à instancier manuellement les classes.
+        </p>
+        <p>
+            Il est ensuite possible de récupérer les services directement dans les méthodes d'un controller
+            (qui eux-mêmes sont des services) grâce à l'autowiring.
+        </p>
+        <p>
+            Par exemple, pour récupérer l'objet <code class="language-php">Request</code> depuis une méthode d'un controller :
+        </p>
+        <pre><code class="language-php">public function testAction(Request $request): Response</code></pre>
+        <p>
+            Dans l'exemple ci-dessus, Symfony va automatiquement instancier un objet <code class="language-php">Request</code>
+            qui contiendra les informations de la requête HTTP.
+        </p>
+        <pre><code class="language-bash">php bin/console debug:autowiring # Liste des services disponibles</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/controller.html#fetching-services" target="_blank" class="info">
+                Autowiring dans un controller
+            </a>
         </footer>
     </section>
 

@@ -10,7 +10,7 @@
             <div class="col" style="flex: 2;">
                 <ul>
                     <li>Créer par SensioLabs</li>
-                    <li>Bundle pouvant fonctionner indépendamment</li>
+                    <li>Package pouvant fonctionner indépendamment</li>
                     <li>Plus simple</li>
                     <li>Plus sécurisé</li>
                     <li>Compréhensible par les designers</li>
@@ -20,25 +20,28 @@
                 <img src="assets/images/twig.png" alt="Twig">
             </div>
         </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/templates.html" target="_blank" class="info">Documentation Twig</a>
+        </footer>
     </section>
 
     <section>
         <h3>Les différents tags</h3>
         <ul>
-            <li>{{ }} : Afficher une valeur (echo)</li>
-            <li>{% %} : Effectuer une action (foreach, if…)</li>
-            <li>{# #} : Commentaires</li>
+            <li><code class="language-twig">{{ }}</code> : Afficher une valeur (echo)</li>
+            <li><code class="language-twig">{% %}</code> : Effectuer une action (foreach, if…)</li>
+            <li><code class="language-twig">{# #}</code> : Commentaire</li>
         </ul>
     </section>
 
     <section>
         <h3>Les filtres</h3>
         <p>Les filtres sont utilisés pour modifier un contenu lors de son affichage :</p>
-        <pre><code class="language-twig">{{ title|upper }} <!-- Mettre en majuscules -->
-{{ createdAt|date("d M Y") }} <!-- Formater une date -->
-{{ 15.1561|number_format(2) }} <!-- Afficher 2 chiffres après la virgule -->
-{{ username|escape }} <!-- Échapper une chaîne de caractères -->
-{{ [1, 2, 3]|last }} <!-- Dernier élément d'un tableau --></code></pre>
+        <pre><code class="language-twig">{{ title|upper }} # Mettre en majuscule
+{{ createdAt|date("d M Y") }} # Formater une date
+{{ 15.1561|number_format(2) }} # Afficher 2 chiffres après la virgule
+{{ username|escape }} # Échapper une chaîne de caractères
+{{ [1, 2, 3]|last }} # Dernier élément d'un tableau</code></pre>
     </section>
 
     <section>
@@ -46,8 +49,10 @@
         <div class="container">
             <div class="col">
                 <h4>Controller</h4>
-                <pre><code class="language-php">$this->render('default/index.html.twig');
-$this->render('AppBundle:Default:index.html.twig');</code></pre>
+                <pre><code class="language-php">$this->render('default/index.html.twig', [
+    'username' => 'johndoe',
+    'posts' => $posts
+]);</code></pre>
             </div>
             <div class="col">
                 <h4>Vue</h4>
@@ -57,20 +62,83 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
         </div>
     </section>
 
-    <!-- Remplacer par Webpack Encore !! -->
     <section>
         <h3>Assets</h3>
         <p>Twig dispose d’une fonction asset qui permet de générer les URLs vers les fichiers CSS, JS, images…</p>
-        <p>Cette fonction permet également de gérer les versions des fichiers pour permettre d’éviter les problème de cache.</p>
-        <pre><code class="language-twig"><img src="{{ asset('images/logo.png') }}" alt="{{ sitename }}" />
-<link href="{{ asset('css/blog.css') }}" rel="stylesheet" /></code></pre>
-        <p>Il existe également le bundle assetic qui permet de regrouper les CSS dans un seul fichier, les minifier ou encore optimiser les images.</p>
+        <p>Cette fonction permet également de gérer les versions des fichiers pour permettre d’éviter les problèmes de cache.</p>
+        <pre><code class="language-twig">&lt;img src="{{ asset('images/logo.png') }}" alt="{{ sitename }}" /&gt;
+&lt;link href="{{ asset('css/blog.css') }}" rel="stylesheet" /&gt;</code></pre>
+    </section>
+
+    <section>
+        <h3>Gestion des assets</h3>
+        <p>
+            2 méthodes peuvent être utilisées pour gérer les assets :
+        </p>
+        <ol>
+            <li>
+                <strong>AssetMapper</strong> : Utilise la fonctionnalité
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap" target="_blank">
+                    ImportMap
+                </a>
+                (standardisé par le W3C).
+            </li>
+            <li>
+                <strong>Webpack Encore</strong> : Utilise Webpack pour gérer les assets.
+            </li>
+        </ol>
+        <p>
+            La méthode AssetMapper est la <strong>méthode recommandée</strong> dans la doc de Symfony.
+            Elle est <strong>plus simple</strong> à mettre en place, mais <strong>moins puissante</strong> que Webpack Encore.
+        </p>
+    </section>
+
+    <section>
+        <h3>AssetMapper</h3>
+        <pre><code class="language-bash">composer require symfony/asset-mapper</code></pre>
+        <p>
+            Pendant l'installation, Symfony Flex va automatiquement ajouter les fichiers de configuration nécessaires
+            et modifier le fichier <code>templates/base.html.twig</code> pour utiliser AssetMapper :
+        </p>
+        <pre><code class="language-twig">{% block javascripts %}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+{% endblock %}</code></pre>
+        <p>
+            L'installation va également créer d'autres fichiers et notamment un fichier <code>importmap.php</code>
+            qui va permettre de définir les assets à charger.
+        </p>
+        <footer>
+            <a href="https://symfony.com/doc/current/frontend/asset_mapper.html" target="_blank" class="info">
+                Documentation AssetMapper
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>AssetMapper</h3>
+        <p>
+            Il sera ensuite possible d'importer des fichiers CSS ou JavaScript avec un
+            <code class="language-bash">import</code> classique :
+        </p>
+        <pre><code class="language-js">import multiply from './multiply.js';
+import '../styles/app.css';</code></pre>
+        <p>
+            Il sera également possible d'installer des packages npm avec la commande :
+        </p>
+        <pre><code class="language-bash">php bin/console importmap:require bootstrap</code></pre>
+        <p>
+            Le fichier <code>importmap.php</code> sera automatiquement mis à jour.
+        </p>
     </section>
 
     <section>
         <h3>Définir et modifier des variables</h3>
         <p>Le mot clé "set" permet de définir la valeur d’une variable :</p>
         <pre><code class="language-twig">{% set url = 'http://' ~ app.request.host %}</code></pre>
+        <p>
+            ⚠️ Attention : Les variables seront généralement déclarées dans le controller et passées à la vue et
+            l'instruction <code class="language-twig">set</code> sera donc rarement utilisée.
+        </p>
     </section>
 
     <section>
@@ -83,7 +151,7 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
     Il faut ajouter des articles !
 {% endif %}</code></pre>
         <footer>
-            <a href="https://twig.symfony.com/doc/2.x/tags/if.html" target="_blank" class="info">Twig if documentation</a>
+            <a href="https://twig.symfony.com/doc/3.x/tags/if.html" target="_blank" class="info">Twig if documentation</a>
         </footer>
     </section>
 
@@ -91,18 +159,18 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
         <h3>Boucles</h3>
         <pre><code class="language-twig">{% for user in users if user.active %}
     &lt;li&gt;{{ user.username|e }}&lt;/li&gt;
-{% else %}
+{% else %} {# Aucun utilisateur actif #}
     &lt;li&gt;Aucun utilisateur actif&lt;/li&gt;
 {% endfor %}
 
 {% for post in posts %}
     &lt;li&gt;
         {% if loop.last %}Dernier article :{% endif %}
-        {{ loop.index }} - {{ post.title }}
+        {{ loop.index }} - {{ post.title }} {# la variable loop permet de récupérer des informations sur la boucle en cours #}
     &lt;/li&gt;
 {% endfor %}</code></pre>
         <footer>
-            <a href="https://twig.symfony.com/doc/2.x/tags/for.html" target="_blank" class="info">Twig for documentation</a>
+            <a href="https://twig.symfony.com/doc/3.x/tags/for.html" target="_blank" class="info">Twig for documentation</a>
         </footer>
     </section>
 
@@ -113,7 +181,7 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
     {{ include('post/_post_details.html.twig', { 'post': post }) }}
 {% endfor %}</code></pre>
         <footer>
-            <a href="https://twig.symfony.com/doc/2.x/tags/include.html" target="_blank" class="info">Twig include documentation</a>
+            <a href="https://twig.symfony.com/doc/3.x/tags/include.html" target="_blank" class="info">Twig include documentation</a>
         </footer>
     </section>
 
@@ -143,6 +211,10 @@ $this->render('AppBundle:Default:index.html.twig');</code></pre>
                 <img src="assets/images/twig-inheritance.png" alt="Twig Héritage">
             </div>
         </div>
+        <p>
+            Ici, <code class="language-twig">{% block content %}{% endblock %}</code> permet de définir un emplacement
+            de la page qui pourra être rempli par un autre template enfant.
+        </p>
         <footer>
             <a href="https://symfony.com/doc/current/templating/inheritance.html" target="_blank" class="info">Template Inheritance</a>
         </footer>

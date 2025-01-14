@@ -1,0 +1,157 @@
+<section id="hello-world">
+
+    <section>
+        <h2>Hello world</h2>
+    </section>
+
+    <section>
+        <h3>Processus de traitement d'une requête HTTP</h3>
+        <p>Le processus de traitement d'une requête HTTP dans Symfony est le suivant :</p>
+        <img src="assets/images/http-request.png" alt="Requête HTTP">
+    </section>
+
+    <section>
+        <h3>Front Controller</h3>
+        <p>
+            Front Controller est un design pattern souvent utilisé dans les applications web.
+        </p>
+        <p>
+            Dans Symfony, le Front Controller est représenté par le fichier <code>public/index.php</code>.
+        </p>
+        <p>
+            C'est le point d'entrée de l'application, et c'est lui qui va <strong>gérer toutes les requêtes HTTP</strong>.
+        </p>
+        <footer>
+            <a href="https://en.wikipedia.org/wiki/Front_controller" target="_blank" class="info">Front Controller</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Routage</h3>
+        <p>
+            Le routage est le processus qui permet de faire <strong>correspondre une URL à une action</strong>
+            de contrôleur.
+        </p>
+        <p>
+            Dans Symfony, le routage peut s'écrire de différentes manières (attributs, annotations, YAML, XML, PHP)
+            mais la méthode recommandée est d'utiliser les <strong>attributs</strong>.
+        </p>
+    </section>
+
+    <section>
+        <h3>Routage</h3>
+        <p>
+            Dans l'exemple suivant, nous allons définir une route simple qui affiche "Hello world" :
+        </p>
+        <pre><code class="language-php">#[Route("/test", name: "page_test")]
+public function testAction(): Response
+{
+    return new Response('Hello world');
+}</code></pre>
+        <p>
+            Ici, nous avons utilisé l'attribut <code class="language-php">#[Route]</code> pour définir la route
+            <code>/test</code> qui correspond à la méthode <code class="language-php">testAction()</code> du contrôleur.
+        </p>
+        <p>
+            Nous verrons plus tard pourquoi il est important de <strong>nommer les routes</strong>.
+        </p>
+        <p>
+            On notera également que la méthode <code class="language-php">testAction()</code> retourne un objet
+            <code class="language-php">Response</code> qui contient le texte "Hello world".
+        </p>
+        <p>
+            Enfin, sachez que dans la plupart des cas, le nom de la methode
+            (ici <code class="language-php">testAction()</code>) n'a pas d'importance.
+        </p>
+    </section>
+
+    <section>
+        <h3>Controller</h3>
+        <p>
+            Le controller a pour but de faire le <strong>lien</strong> entre le routeur, la base de données et la vue.
+        </p>
+        <p>
+            Il est représenté par une <strong>méthode</strong> positionnée dans une <strong>classe</strong>
+            qui hérite de la classe <code class="language-php">AbstractController</code> de Symfony.
+        </p>
+        <p>
+            À noter que l'organisation des controllers est libre, et il serait donc possible de créer un seul
+            controller pour l'ensemble des actions de notre application.
+        </p>
+    </section>
+
+    <section>
+        <h3>Controller</h3>
+        <p>
+            Dans l'exemple suivant, nous allons créer un controller <code class="language-php">TestController</code>
+            qui contiendra la méthode <code class="language-php">testAction()</code> :
+        </p>
+        <pre><code class="language-php">namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class TestController extends AbstractController
+{
+    #[Route("/test", name: "page_test")]
+    public function testAction(): Response
+    {
+        return new Response('Hello world');
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Vues</h3>
+        <p>
+            Les vues sont des fichiers qui permettent de <strong>générer du contenu</strong> à afficher à l'utilisateur.
+        </p>
+        <p>
+            Dans Symfony, les vues sont généralement des fichiers <strong>Twig</strong> qui contiennent du code HTML
+            et des balises Twig.
+        </p>
+        <p>
+            Twig est un moteur de template <strong>créé par SensioLabs</strong> et intégré à Symfony.
+        </p>
+    </section>
+
+    <section>
+        <h3>Vues</h3>
+        <p>
+            Dans l'exemple suivant, nous allons créer une vue <code>test.html.twig</code> qui affiche "Hello world" :
+        </p>
+        <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Hello world&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello world&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>
+            Pour afficher cette vue dans notre controller, nous allons utiliser la méthode
+            <code class="language-php">render()</code> de la classe <code class="language-php">AbstractController</code> :
+        </p>
+        <pre><code class="language-php">public function testAction(): Response
+{
+    return $this->render('test.html.twig');
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Conclusion</h3>
+        <p>
+            Dans ce chapitre, nous avons vu comment créer une route simple qui affiche "Hello world" dans Symfony.
+        </p>
+        <p>
+            Nous avons également vu comment créer un controller et une vue pour afficher du contenu à l'utilisateur.
+        </p>
+        <p>
+            Dans les prochains chapitres, nous verrons comment passer des paramètres à nos routes, gérer les formulaires,
+            et bien d'autres fonctionnalités de Symfony.
+        </p>
+    </section>
+
+</section>
