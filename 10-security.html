@@ -224,7 +224,7 @@ php bin/console make:registration-form</code></pre>
     <section>
         <h3>Sécuriser un controller</h3>
         <p>Il est possible de définir des règles de sécurités sur un controller :</p>
-        <pre><code class="language-php">#[IsGranted("ROLE_ADMIN"))]
+        <pre><code class="language-php">#[IsGranted("ROLE_ADMIN")]
 public function deleteAction($id)</code></pre>
         <p>Ou bien plus spécifiquement à l’intérieur d’un controller :</p>
         <pre><code class="language-php">public function helloAction($name) {
