@@ -111,7 +111,7 @@ php bin/console --env=test doctrine:migration:migrate
 php bin/console --env=test doctrine:fixtures:load</code></pre>
         <p>Nous allons également utiliser un package pour s'assurer que la base de données soit ré-initialisée avant chaque test :</p>
         <pre><code class="language-bash">composer require --dev dama/doctrine-test-bundle</code></pre>
-        <pre><code class="language-xml">&lt;!-- phpunit.xml.dist --&gt;
+        <pre><code class="language-xml">&lt;!-- phpunit.dist.xml --&gt;
 &lt;phpunit&gt;
     &lt;extensions&gt;
         &lt;extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/&gt;
