@@ -71,8 +71,33 @@ class PersonTest extends TestCase
     </section>
 
     <section>
+        <h3>Mock</h3>
+        <p>
+            Les mocks sont utilisés pour <strong>simuler</strong> le comportement d'objets complexes ou d'objets qui
+            dépendent de ressources externes.
+        </p>
+        <p>
+            Par exemple, si nous avons une classe <code class="language-php">PersonService</code> qui dépend
+            d'un repository pour récupérer des données, nous pouvons utiliser un <strong>mock pour simuler le comportement</strong>
+            de ce repository lors de nos tests unitaires.
+        </p>
+        <pre><code class="language-php">class PersonServiceTest extends TestCase
+{
+    public function testGetPersonFullName(): void
+    {
+        $personRepositoryMock = $this->createMock(PersonRepository::class);
+        $personRepositoryMock->expects($this->once()) // s'assure que la méthode find() est appelée une seule fois
+            ->method('find')
+            ->willReturn((new Person())->setFirstName('John')->setLastName('Doe'));
+        $personService = new PersonService($personRepositoryMock);
+        // ... test de la méthode getPersonFullName() de PersonService
+    }
+}</code></pre>
+    </section>
+
+    <section>
         <h3>Tests d'Intégration</h3>
-        <pre><code class="language-php">php bin/console make:test</code></pre>
+        <pre><code class="language-bash">php bin/console make:test</code></pre>
         <p>Saisissez ensuite les options <code class="language-bash">KernelTestCase</code> puis <code class="language-bash">PersonIntegrationTest</code>.</p>
     </section>
 
