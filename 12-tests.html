@@ -38,8 +38,8 @@
         <p>Les tests unitaires ont pour objectif de tester de manière individuelle le comportement d'une classe.</p>
         <p>Dans l'exemple suivant, nous allons tester la méthode <code class="language-php">getFullName()</code> d'une entité <code class="language-php">Person</code>.</p>
         <p>Nous allons commencer par générer la classe PersonTest en utilisant MakerBundle :</p>
-        <pre><code class="language-php">php bin/console make:test</code></pre>
-        <p>Saisissez ensuite les options <code class="language-bash">TestCase</code> puis <code class="language-bash">PersonUnitTest</code>.</p>
+        <pre><code class="language-bash">php bin/console make:test</code></pre>
+        <p>Saisissez ensuite les options <code class="language-bash">TestCase</code> puis <code class="language-bash">PersonTest</code>.</p>
     </section>
 
     <section>
@@ -99,31 +99,39 @@ class PersonTest extends TestCase
         <h3>Tests d'Intégration</h3>
         <pre><code class="language-bash">php bin/console make:test</code></pre>
         <p>Saisissez ensuite les options <code class="language-bash">KernelTestCase</code> puis <code class="language-bash">PersonIntegrationTest</code>.</p>
+        <p>
+            Un test d'intégration démarre le <strong>kernel</strong> de Symfony : il a donc accès au conteneur de
+            services et à la base de données, contrairement à un test unitaire.
+        </p>
     </section>
 
     <section>
         <h3>Tests d'Intégration</h3>
         <p>Nous allons maintenant configurer l'environnement de test et plus particulièrement la connexion à la base de données en créant un fichier <code>.env.test</code> :</p>
-        <pre><code class="language-dotenv">DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7"</code></pre>
+        <pre><code class="language-dotenv">DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=8.0"</code></pre>
         <p>Puis, nous allons créer la base de données avec les données de test :</p>
         <pre><code class="language-bash">php bin/console --env=test doctrine:database:create
-php bin/console --env=test doctrine:migration:migrate
+php bin/console --env=test doctrine:migrations:migrate
 php bin/console --env=test doctrine:fixtures:load</code></pre>
         <p>Nous allons également utiliser un package pour s'assurer que la base de données soit ré-initialisée avant chaque test :</p>
         <pre><code class="language-bash">composer require --dev dama/doctrine-test-bundle</code></pre>
-        <pre><code class="language-xml">&lt;!-- phpunit.dist.xml --&gt;
+        <pre><code class="language-xml">&lt;!-- phpunit.xml.dist --&gt;
 &lt;phpunit&gt;
     &lt;extensions&gt;
-        &lt;extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/&gt;
+        &lt;bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/&gt;
     &lt;/extensions&gt;
 &lt;/phpunit&gt;</code></pre>
+        <p>
+            Ce bundle exécute chaque test dans une <strong>transaction</strong> annulée (rollback) à la fin du test :
+            la base retrouve donc automatiquement son état initial.
+        </p>
     </section>
 
     <section>
         <h3>Tests d'Intégration</h3>
-        <pre><code class="language-php">class PersonIntegretionTest extends KernelTestCase
+        <pre><code class="language-php">class PersonIntegrationTest extends KernelTestCase
 {
-    private ?EntityManager $entityManager;
+    private ?EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
@@ -150,7 +158,7 @@ php bin/console --env=test doctrine:fixtures:load</code></pre>
 
     <section>
         <h3>Tests d'Application</h3>
-        <pre><code class="language-php">php bin/console make:test</code></pre>
+        <pre><code class="language-bash">php bin/console make:test</code></pre>
         <p>Saisissez ensuite les options <code class="language-bash">WebTestCase</code> puis <code class="language-bash">PersonControllerTest</code>.</p>
     </section>
 

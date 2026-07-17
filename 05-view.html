@@ -144,7 +144,7 @@ import '../styles/app.css';</code></pre>
     <section>
         <h3>Conditions</h3>
         <pre><code class="language-twig">{% if posts %}
-    Il y a {{ post|length }} article(s).
+    Il y a {{ posts|length }} article(s).
 {% elseif not is_granted('ROLE_ADMIN') %}
     Aucun article !
 {% else %}
@@ -188,9 +188,13 @@ import '../styles/app.css';</code></pre>
     <section>
         <h3>Afficher le rendu d’un controller</h3>
         <p>Il est parfois nécessaire de passer par un controller avant d’afficher un template de page (afficher un menu dynamique, une sidebar, un footer avec des infos de contact...).</p>
-        <pre><code class="language-twig">{{ render(controller('AppBundle:Post:MostSeen', { 'limit': 5 })) }}</code></pre>
+        <pre><code class="language-twig">{{ render(controller('App\\Controller\\PostController::mostSeen', { limit: 5 })) }}</code></pre>
+        <p>
+            ⚠️ Attention : le controller est appelé lors du rendu du template, ce qui déclenche une
+            <strong>sous-requête</strong> supplémentaire. À utiliser avec parcimonie.
+        </p>
         <footer>
-            <a href="https://symfony.com/doc/current/templating/embedding_controllers.html" target="_blank" class="info">Twig embedding controller documentation</a>
+            <a href="https://symfony.com/doc/current/templates.html#embedding-controllers" target="_blank" class="info">Twig embedding controller documentation</a>
         </footer>
     </section>
 
@@ -216,21 +220,24 @@ import '../styles/app.css';</code></pre>
             de la page qui pourra être rempli par un autre template enfant.
         </p>
         <footer>
-            <a href="https://symfony.com/doc/current/templating/inheritance.html" target="_blank" class="info">Template Inheritance</a>
+            <a href="https://symfony.com/doc/current/templates.html#template-inheritance-and-layouts" target="_blank" class="info">Template Inheritance</a>
         </footer>
     </section>
 
     <section>
         <h3>La variable globale app</h3>
         <ul>
-            <li>app.user : Utilisateur en cours</li>
+            <li>app.user : Utilisateur en cours (ou null si non authentifié)</li>
             <li>app.request : Objet Request en cours</li>
             <li>app.session : Objet Session en cours</li>
+            <li>app.flashes : Messages flash stockés en session</li>
             <li>app.environment : Environnement en cours (dev, prod…)</li>
             <li>app.debug : Booléen vrai ou faux</li>
+            <li>app.locale : Langue utilisée dans le contexte courant</li>
+            <li>app.current_route : Nom de la route en cours</li>
         </ul>
         <footer>
-            <a href="https://symfony.com/doc/current/templating/app_variable.html" target="_blank" class="info">App variables</a>
+            <a href="https://symfony.com/doc/current/templates.html#the-app-global-variable" target="_blank" class="info">App variables</a>
         </footer>
     </section>
 

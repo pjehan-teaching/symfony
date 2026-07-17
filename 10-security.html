@@ -38,7 +38,6 @@
         <p>Mettez ensuite à jour votre base de données :</p>
         <pre><code class="language-bash">php bin/console make:migration
 php bin/console doctrine:migrations:migrate</code></pre>
-</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/security.html#the-user" target="_blank" class="info">
                 Documentation User Entity
@@ -53,11 +52,9 @@ php bin/console doctrine:migrations:migrate</code></pre>
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
-    private $hasher;
-
-    public function __construct(UserPasswordHasherInterface $hasher)
-    {
-       $this->hasher = $hasher;
+    public function __construct(
+        private readonly UserPasswordHasherInterface $hasher
+    ) {
     }
 
     public function load(ObjectManager $manager): void
@@ -87,7 +84,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         <h3>Configuration</h3>
         <p>Définir les paramètres principaux de sécurité :</p>
         <pre><code class="language-yaml">security:
-        firewalls:
+    firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -215,7 +212,7 @@ php bin/console make:registration-form</code></pre>
             <code>register.html.twig</code>.
         </p>
         <footer>
-            <a href="https://symfony.com/doc/7.3/security.html#security-make-registration-form" target="_blank" class="info">
+            <a href="https://symfony.com/doc/current/security.html#security-make-registration-form" target="_blank" class="info">
                 Documentation Formulaire d'inscription
             </a>
         </footer>
@@ -227,11 +224,15 @@ php bin/console make:registration-form</code></pre>
         <pre><code class="language-php">#[IsGranted("ROLE_ADMIN")]
 public function deleteAction($id)</code></pre>
         <p>Ou bien plus spécifiquement à l’intérieur d’un controller :</p>
-        <pre><code class="language-php">public function helloAction($name) {
+        <pre><code class="language-php">public function helloAction(string $name): Response {
     $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
 }</code></pre>
+        <p>
+            L'attribut <code class="language-php">#[IsGranted]</code> est fourni depuis Symfony 6.2 par le
+            SecurityBundle (namespace <code>Symfony\Component\Security\Http\Attribute\IsGranted</code>).
+        </p>
         <footer>
-            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/security.html" target="_blank" class="info">Security Annotations</a>
+            <a href="https://symfony.com/doc/current/security.html#securing-controllers-and-other-code" target="_blank" class="info">Securing Controllers</a>
         </footer>
     </section>
 

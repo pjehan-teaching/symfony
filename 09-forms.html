@@ -17,7 +17,7 @@ composer require validator
         <pre><code class="language-php">$form = $this->createFormBuilder($author)
             ->add('firstname', TextType::class)
             ->add('lastname', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Enregistrer'))
+            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->getForm();</code></pre>
     </section>
 
@@ -69,30 +69,46 @@ composer require validator
 
     <section>
         <h3>Gérer l’envoi du formulaire</h3>
-        <p>Par défaut, le formulaire renvoi les données au Controller qui l’a affiché. Il est alors possible de sauvegarder les données de cette façon :</p>
-        <pre><code class="language-php">$form = $this->createFormBuilder($author)
-            ->add('firstname', TextType::class)
-            ->add('lastname', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Enregistrer'))
-            ->getForm();
+        <p>Par défaut, le formulaire renvoie les données au Controller qui l’a affiché. Il est alors possible de sauvegarder les données de cette façon :</p>
+        <pre><code class="language-php">public function new(Request $request, EntityManagerInterface $em): Response
+{
+    $form = $this->createFormBuilder($author)
+                ->add('firstname', TextType::class)
+                ->add('lastname', TextType::class)
+                ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
+                ->getForm();
 
-$form->handleRequest($request);
-if ($form->isSubmitted() && $form->isValid()) {
-    $author = $form->getData();
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $author = $form->getData();
 
-    $em = $this->getDoctrine()->getManager();
-    $em->persist($author);
-    $em->flush();
+        $em->persist($author);
+        $em->flush();
+
+        return $this->redirectToRoute('author_list');
+    }
+
+    return $this->render('author/new.html.twig', ['form' => $form]);
 }</code></pre>
+        <p>
+            ⚠️ La méthode <code class="language-php">$this->getDoctrine()</code> a été
+            <strong>supprimée depuis Symfony 6</strong> : il faut injecter
+            <code class="language-php">EntityManagerInterface</code>.
+        </p>
     </section>
 
     <section>
         <h3>La validation</h3>
-        <p>Pour gérer la validation, il faut ajouter des contraintes dans des annotations directement sur les entités :</p>
+        <p>Pour gérer la validation, il faut ajouter des contraintes dans des attributs directement sur les entités :</p>
         <pre><code class="language-php">use Symfony\Component\Validator\Constraints as Assert;
 
 #[Assert\NotBlank(message: "Merci de saisir le prénom")]
-public $firstname;</code></pre>
+#[Assert\Length(min: 2, max: 50)]
+private ?string $firstname = null;</code></pre>
+        <p>
+            La validation est <strong>indépendante du formulaire</strong> : elle porte sur l'entité et est déclenchée
+            par <code class="language-php">$form->isValid()</code>.
+        </p>
         <footer>
             <a href="https://symfony.com/doc/current/validation.html" target="_blank" class="info">Form Validation</a>
         </footer>
@@ -103,12 +119,14 @@ public $firstname;</code></pre>
         <p>Il est préférable d’extraire les formulaires du Controller afin de pouvoir les <strong>réutiliser</strong> plusieurs fois. Pour cela, nous allons <strong>positionner nos formulaires dans des classes</strong> situées dans un dossier “Form”.</p>
         <p>Nous pourrons ensuite générer le formulaire avec la méthode <strong>createForm</strong> depuis le Controller</p>
         <pre><code class="language-php">class AuthorType extends AbstractType {
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder->add('firstname')
                 ->add('lastname')
                 ->add('save', SubmitType::class);
     }
 }</code></pre>
+        <pre><code class="language-php">// Dans le controller :
+$form = $this->createForm(AuthorType::class, $author);</code></pre>
     </section>
 
     <section>
@@ -127,9 +145,9 @@ public $firstname;</code></pre>
             <li>Sur une page</li>
             <li>Sur un champ</li>
         </ul>
-        <pre><code class="language-yaml"># app/config/config.yml
+        <pre><code class="language-yaml"># config/packages/twig.yaml
 twig:
-    form_theme: 'bootstrap_3_layout.html.twig'</code></pre>
+    form_themes: ['bootstrap_5_layout.html.twig']</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/form/form_customization.html" target="_blank" class="info">Form Customization</a>
         </footer>

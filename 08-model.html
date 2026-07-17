@@ -8,8 +8,9 @@
         <h3>L'ORM : Doctrine</h3>
         <div class="container">
             <div class="col" style="flex: 2;">
-                <p>Symfony recommande l’utilisation de l’ORM (Object-Relational Mapping) Doctrine 2.</p>
+                <p>Symfony recommande l’utilisation de l’ORM (Object-Relational Mapping) Doctrine.</p>
                 <p>Ce dernier sera en charge de toute la partie “Model” de notre application (génération des entités, persistance des données, requêtes...).</p>
+                <p>Doctrine est un projet <strong>indépendant de Symfony</strong>, intégré via le DoctrineBundle.</p>
             </div>
             <div class="col">
                 <img src="assets/images/doctrine.png" alt="Doctrine">
@@ -30,8 +31,8 @@ php bin/console list doctrine # Voir la liste des commandes ajoutées par Doctri
     <section>
         <h3>Configuration</h3>
         <ul>
-            <li>.env : Définir les paramètres de connexion à la BDD</li>
-            <li>config/packages/doctrine.yml : Configuration du driver</li>
+            <li>.env / .env.local : Définir les paramètres de connexion à la BDD (variable <code>DATABASE_URL</code>)</li>
+            <li>config/packages/doctrine.yaml : Configuration du driver et du mapping</li>
         </ul>
     </section>
 
@@ -50,15 +51,21 @@ php bin/console list doctrine # Voir la liste des commandes ajoutées par Doctri
 
     <section>
         <h3>Database First</h3>
-        <p>Génération du mapping à partir de la BDD :</p>
-        <pre><code class="language-bash">php bin/console doctrine:mapping:import --force AppBundle xml</code></pre>
-        <p>Conversion du mapping en annotations et génération des entités :</p>
-        <pre><code class="language-bash">php bin/console doctrine:mapping:convert annotation ./src
-php bin/console doctrine:generate:entities AppBundle</code></pre>
-        <p><strong>ATTENTION !</strong> : Doctrine est capable de générer environ 70% / 80% du code. Il ne peut pas gérer les associations inversées, l’héritage, les suppressions en cascade...</p>
-        <footer>
-            <a href="https://symfony.com/doc/current/doctrine/reverse_engineering.html" target="_blank" class="info">Reverse Engineering</a>
-        </footer>
+        <p>
+            Les commandes de <strong>reverse engineering</strong> (<code>doctrine:mapping:import</code>,
+            <code>doctrine:generate:entities</code>) permettaient de générer les entités à partir d'une base
+            de données existante.
+        </p>
+        <p>
+            ⚠️ Elles ont été <strong>supprimées de Doctrine ORM 3</strong>. Doctrine ne générait qu'environ 70 à 80 %
+            du code : les associations inversées, l'héritage ou les suppressions en cascade devaient de toute façon
+            être écrits à la main.
+        </p>
+        <p>
+            L'approche <strong>Code First</strong> est donc aujourd'hui la seule officiellement supportée. Pour une base
+            existante, il faut écrire les entités manuellement, puis vérifier la cohérence du mapping avec :
+        </p>
+        <pre><code class="language-bash">php bin/console doctrine:schema:validate</code></pre>
     </section>
 
     <section>
@@ -118,7 +125,7 @@ class Feature
      */
      #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: "features")]
      #[ORM\JoinColumn(name: "product_id", referencedColumnName: "id")]
-    private Product $product;
+    private ?Product $product = null;
 }</code></pre>
             </div>
         </div>
@@ -185,24 +192,25 @@ class Group
 
     <section>
         <h3>Ajouter</h3>
-        <p>Code à ajouter dans un Controlleur :</p>
-        <pre><code class="language-php">// Récupérer l’Entity Manager de Doctrine
-public function testAction(EntityManagerInterface $em) // Injection de dépendance
+        <p>Code à ajouter dans un Controller :</p>
+        <pre><code class="language-php">// L'Entity Manager est récupéré par injection de dépendance
+public function testAction(EntityManagerInterface $em): Response
+{
+    // Création d’un nouveau produit
+    $product = new Product();
+    $product->setName('Keyboard');
 
-// Création d’un nouveau produit
-$product = new Product();
-$product->setName('Keyboard');
+    // Ajouter l’objet dans l’Entity Manager
+    $em->persist($product);
 
-// Ajouter l’objet dans l’Entity Manager
-$em->persist($product);
-
-// Execution des requêtes SQL
-$em->flush();</code></pre>
+    // Exécution des requêtes SQL
+    $em->flush();
+}</code></pre>
     </section>
 
     <section>
         <h3>Modifier</h3>
-        <p>Code à ajouter dans un Controlleur :</p>
+        <p>Code à ajouter dans un Controller :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
 $repository = $em->getRepository(Product::class);
 
@@ -218,7 +226,7 @@ $em->flush();</code></pre>
 
     <section>
         <h3>Supprimer</h3>
-        <p>Code à ajouter dans un Controlleur :</p>
+        <p>Code à ajouter dans un Controller :</p>
         <pre><code class="language-php">// Récupérer le Repository de l'entité
 $repository = $em->getRepository(Product::class);
 
@@ -260,11 +268,11 @@ $em->flush();</code></pre>
                 <h4>DQL</h4>
                 <pre><code class="language-php">$em->createQuery('
                 SELECT p
-                FROM AppBundle:Post p
+                FROM App\Entity\Post p
                 WHERE p.publishedAt <= :now
                 ORDER BY p.publishedAt DESC
             ')
-            ->setParameter('now', new \DateTime());</code></pre>
+            ->setParameter('now', new \DateTimeImmutable());</code></pre>
             </div>
             <div class="col">
                 <h4>QueryBuilder</h4>
@@ -272,10 +280,10 @@ $em->flush();</code></pre>
 
 
 $qb->select('p')
-    ->from('AppBundle:Post', 'p')
+    ->from(Post::class, 'p')
     ->where($qb->expr()->lte('p.publishedAt', ':now'))
-    ->orderBy('p.publishedAt', 'DESC');
-    ->setParameter('now', new \DateTime());</code></pre>
+    ->orderBy('p.publishedAt', 'DESC')
+    ->setParameter('now', new \DateTimeImmutable());</code></pre>
             </div>
         </div>
     </section>

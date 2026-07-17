@@ -33,7 +33,7 @@
             de contrôleur.
         </p>
         <p>
-            Dans Symfony, le routage peut s'écrire de différentes manières (attributs, annotations, YAML, XML, PHP)
+            Dans Symfony, le routage peut s'écrire de différentes manières (attributs, YAML, XML, PHP)
             mais la méthode recommandée est d'utiliser les <strong>attributs</strong>.
         </p>
     </section>
@@ -90,7 +90,7 @@ public function testAction(): Response
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class TestController extends AbstractController
 {

@@ -9,7 +9,7 @@
         <ul>
             <li>Un service permet de <strong>simplifier</strong> l’utilisation de certaines classes ayant pour but de réaliser une <strong>fonction particulière</strong>.</li>
             <li>Symfony utilise un <strong>conteneur de services</strong> (service container) afin de gérer l’organisation, l’instanciation et la gestion des dépendances des différents services existant.</li>
-            <li>L’ensemble des services de notre application seront listés dans le fichier <strong>services.yml</strong></li>
+            <li>La configuration des services de notre application se fait dans le fichier <strong>config/services.yaml</strong></li>
             <li>On parle de <strong>programmation orientée services</strong></li>
         </ul>
         <footer>
@@ -28,7 +28,7 @@
         <pre><code class="language-bash">php bin/console debug:container</code></pre>
         <p>
             Certains services peuvent être <strong>autowirés</strong>, c'est-à-dire que Symfony peut les injecter
-            automatiquement sans avoir besoin de les déclarer dans le fichier services.yml
+            automatiquement sans avoir besoin de les déclarer dans le fichier config/services.yaml
         </p>
         <p>
             La liste des services peut être obtenue en utilisant la commande suivante :
@@ -61,7 +61,7 @@ class MyService {
         <h3>Créer un service</h3>
         <p>
             Un service aura souvent besoin d'autres services pour fonctionner. Il est possible de les injecter en
-            utilisant l'autowiring ou en les déclarant dans le fichier services.yml :
+            utilisant l'autowiring ou en les déclarant dans le fichier config/services.yaml :
         </p>
         <pre><code class="language-yaml">services:
     App\Service\MyService:
@@ -80,10 +80,15 @@ class MyService {
             L'upload de fichiers étant une tâche récurrente, il est pertinent de créer un service pour pouvoir
             simplifier le développement.
         </p>
-        <pre><code class="language-yaml">services:
-    app.file_uploader:
+        <pre><code class="language-yaml"># config/services.yaml
+services:
+    App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads'</code></pre>
+        <p>
+            Ici, seul l'argument <code>$targetDirectory</code> est déclaré car il ne s'agit pas d'un service mais d'un
+            <strong>paramètre scalaire</strong> : l'autowiring ne peut pas le deviner.
+        </p>
         <footer>
             <a href="https://symfony.com/doc/current/controller/upload_file.html#creating-an-uploader-service" target="_blank" class="info">
                 Creating an Uploader Service

@@ -7,7 +7,7 @@
     <section>
         <h3>Présentation</h3>
         <p>Le controller a pour but de faire le <strong>lien</strong> entre le routeur, la base de données et la vue.</p>
-        <p>Il est représenté par une <strong>méthode</strong> positionnée dans une <strong>classe</strong> qui hérite de la classe Controller.</p>
+        <p>Il est représenté par une <strong>méthode</strong> positionnée dans une <strong>classe</strong> qui hérite de la classe <code class="language-php">AbstractController</code>.</p>
         <p>Il récupère des informations (objet <strong>Request</strong>) pour ensuite retourner un résultat (objet <strong>Response</strong>).</p>
     </section>
 
@@ -15,8 +15,12 @@
         <h3>Récupérer un paramètre</h3>
         <p>Il est possible de récupérer les paramètres de l’URL en définissant des paramètres dans la méthode :</p>
         <pre><code class="language-php">
-#[Route("/test/{title}/{username}", name: "page_test")]
-public function testAction(string $title = "Default page title", string $username): Response</code></pre>
+#[Route("/test/{username}/{title}", name: "page_test")]
+public function testAction(string $username, string $title = "Default page title"): Response</code></pre>
+        <p>
+            ⚠️ En PHP, un paramètre <strong>optionnel</strong> doit toujours être placé <strong>après</strong> les
+            paramètres obligatoires. Seul le dernier paramètre de la route peut donc avoir une valeur par défaut.
+        </p>
         <p>Il est également possible d'utiliser MapEntity :</p>
         <pre><code class="language-php">#[Route("/book/{id}")]
 public function showAction(
@@ -84,7 +88,8 @@ public function showAction(Book $book): Response</code></pre>
             <li>getMethod() : Récupérer la méthode utilisée (GET, POST…)</li>
             <li>isXmlHttpRequest() : Pour savoir si il s’agit d’une requête AJAX</li>
             <li>getLocale() : Récupérer la locale en cours (fr, en…)</li>
-            <li>getBasePath() : Récupérer l’URL appelée</li>
+            <li>getPathInfo() : Récupérer le chemin appelé (ex : /blog/mon-article)</li>
+            <li>getClientIp() : Récupérer l’adresse IP du client</li>
             <li>...</li>
         </ul>
         <footer>
@@ -109,15 +114,19 @@ public function showAction(Book $book): Response</code></pre>
 
     <section>
         <h3>Les méthodes principales</h3>
-        <p>Méthodes de la classe Controller :</p>
-        <pre><code class="language-php">$this->render('default/index.html.twig', array('username' => 'johndoe'));
-$url = $this->generateUrl('blog_show', array('slug' => 'my-blog-post'));
-$this->redirect('http://www.google.com');
-$this->redirectToRoute('blog_show', array('slug' => 'my-blog-post'));
-$this->forward('AppBundle:Blog:show', array('slug' => 'my-blog-post'));
+        <p>Méthodes de la classe <code class="language-php">AbstractController</code> :</p>
+        <pre><code class="language-php">$this->render('default/index.html.twig', ['username' => 'johndoe']);
+$url = $this->generateUrl('blog_show', ['slug' => 'my-blog-post']);
+$this->redirect('https://www.google.com');
+$this->redirectToRoute('blog_show', ['slug' => 'my-blog-post']);
+$this->forward(BlogController::class . '::show', ['slug' => 'my-blog-post']);
 $this->addFlash('error', 'Une erreur s\'est produite !');
-$this->createNotFoundException('Utilisateur introuvable');
-$this->json(array('username' => 'johndoe'));</code></pre>
+throw $this->createNotFoundException('Utilisateur introuvable'); // Génère une 404
+$this->json(['username' => 'johndoe']);</code></pre>
+        <p>
+            ⚠️ <code class="language-php">createNotFoundException()</code> ne fait que <strong>créer</strong>
+            l'exception : il faut la lancer avec <code class="language-php">throw</code> pour qu'elle produise une 404.
+        </p>
     </section>
 
 </section>

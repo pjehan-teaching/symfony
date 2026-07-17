@@ -6,11 +6,11 @@
 
     <section>
         <h3>Prérequis</h3>
-        <p>Symfony 7+ :</p>
+        <p>Symfony 8 :</p>
         <ul style="display: block;">
-            <li>PHP 8.2 +</li>
+            <li>PHP 8.4 + (PHP 8.5 est la dernière version stable)</li>
             <li>Composer / Symfony CLI</li>
-            <li>Plusieurs modules PHP (Ctype, iconv, JSON...)</li>
+            <li>Plusieurs extensions PHP (Ctype, iconv, PCRE, Session, SimpleXML, Tokenizer)</li>
         </ul>
         <p>Doctrine :</p>
         <ul style="display: block;">
@@ -52,18 +52,22 @@ composer update
                 Avec Composer
                 <ul>
                     <li>Installer Composer : <a href="https://getcomposer.org/doc/00-intro.md" target="_blank">https://getcomposer.org/doc/00-intro.md</a></li>
-                    <li><code class="language-bash">composer create-project symfony/skeleton my-project</code> <a href="https://github.com/symfony/skeleton" target="_blank">skeleton</a></li>
+                    <li><code class="language-bash">composer create-project symfony/skeleton:"8.1.*" my-project</code> <a href="https://github.com/symfony/skeleton" target="_blank">skeleton</a></li>
                     <li><code class="language-bash">composer require webapp</code></li>
                 </ul>
             </li>
             <li>
-                Avec Symfony CLI (<del>deprecated</del> de retour dans la V5)
+                Avec Symfony CLI (méthode recommandée)
                 <ul>
-                    <li>Installer l’application Symfony Installer : <a href="https://symfony.com/doc/current/setup.html#creating-symfony-applications" target="_blank">https://symfony.com/doc/current/setup.html#creating-symfony-applications</a></li>
-                    <li><code class="language-bash">symfony new my_project_name --webapp</code></li>
+                    <li>Installer le CLI : <a href="https://symfony.com/download" target="_blank">https://symfony.com/download</a></li>
+                    <li><code class="language-bash">symfony new my_project_name --version="8.1.*" --webapp</code></li>
                 </ul>
             </li>
         </ul>
+        <p>
+            L'option <code class="language-bash">--version</code> accepte également <code class="language-bash">lts</code>
+            (dernière version LTS, actuellement la 7.4) ou <code class="language-bash">next</code>.
+        </p>
         <p>
             Le drapeau <code class="language-bash">--webapp</code> permet d'installer un projet Symfony avec un
             ensemble de packages recommandés pour le développement d'applications web (Twig, Doctrine, Maker...).
@@ -75,18 +79,15 @@ composer update
 
     <section>
         <h3>Installation</h3>
-        <p>Vérifier ensuite la configuration :</p>
-        <ul style="display: block;">
-            <li><code class="language-bash">composer require requirements-checker</code></li>
-            <li><a href="http://localhost/check.php" target="_blank">http://localhost/check.php</a></li>
-            <li><code class="language-bash">composer remove requirements-checker</code></li>
-        </ul>
-        <p>Ou bien avec le CLI de Symfony :</p>
-        <ul style="display: block;">
-            <li><code class="language-bash">symfony check:requirements</code></li>
-        </ul>
+        <p>Vérifier ensuite que le serveur dispose bien de tous les prérequis :</p>
+        <pre><code class="language-bash">symfony check:requirements</code></pre>
+        <p>
+            Cette commande vérifie la version de PHP, les extensions installées et la configuration du
+            <code>php.ini</code>. Elle doit être exécutée sur la machine de développement <strong>et</strong> sur le
+            serveur de production.
+        </p>
         <footer>
-            <a href="http://symfony.com/doc/current/reference/requirements.html" target="_blank" class="info">Requirements</a>
+            <a href="https://symfony.com/doc/current/setup.html#technical-requirements" target="_blank" class="info">Requirements</a>
         </footer>
     </section>
 
@@ -104,14 +105,18 @@ composer update
         <ul style="display: block;">
             <li><strong>bin</strong> : Fichiers exécutables (plus particulièrement console)</li>
             <li><strong>config</strong> : Fichiers de configuration</li>
-            <li><strong>public</strong> : Point d’entré de l’application</li>
+            <li><strong>migrations</strong> : Migrations Doctrine de la base de données</li>
+            <li><strong>public</strong> : Point d’entrée de l’application (index.php) et assets publics</li>
             <li>
                 <strong>src</strong>
                 <ul>
                     <li><strong>Controller</strong> : Objets PHP</li>
                     <li><strong>Entity</strong> (Model) : Objets PHP représentant la base de données</li>
+                    <li><strong>Repository</strong> : Classes de requêtage des entités</li>
                 </ul>
             </li>
+            <li><strong>templates</strong> : Templates Twig</li>
+            <li><strong>tests</strong> : Tests automatisés</li>
             <li><strong>var</strong> : Fichiers autogénérés par Symfony (cache, logs...)</li>
             <li><strong>vendor</strong> : Librairies externes téléchargées via Composer</li>
             <li><strong>.env</strong> : Fichier de configuration de l’environnement</li>
@@ -132,9 +137,14 @@ composer update
     </section>
 
     <section>
-        <h3>Attributs vs Annotations vs YAML vs XML</h3>
+        <h3>Attributs vs YAML vs XML</h3>
         <p>Symfony permet d’utiliser différentes techniques afin de définir des <strong>routes</strong>, des contraintes de <strong>sécurités</strong>, le <strong>mapping</strong> du modèle…</p>
-        <p>Cependant, Symfony <strong>recommande fortement</strong> l’utilisation des attributs dans sa documentation principalement pour leurs <strong>simplicité</strong> d’utilisation.</p>
+        <p>Cependant, Symfony <strong>recommande fortement</strong> l’utilisation des attributs dans sa documentation principalement pour leur <strong>simplicité</strong> d’utilisation.</p>
+        <p>
+            ⚠️ Les anciennes <strong>annotations</strong> (commentaires <code class="language-php">@Route</code> nécessitant
+            la librairie Doctrine Annotations) ne sont <strong>plus supportées depuis Symfony 7</strong>. Elles sont
+            remplacées par les attributs, natifs à PHP.
+        </p>
         <footer>
             <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank" class="warning">
                 Les attributs sont disponibles depuis PHP 8
@@ -171,8 +181,8 @@ composer update
         <p>Symfony propose une interface en ligne de commande permettant de faciliter l'utilisation du serveur PHP :</p>
         <pre><code class="language-bash">symfony server:start</code></pre>
         <p>Vous pouvez ensuite démarrer / stopper le serveur de cette façon :</p>
-        <pre><code class="language-bash">symfony server:start -d
-php symfony server:stop</code></pre>
+        <pre><code class="language-bash">symfony server:start -d # Démarrer en tâche de fond (daemon)
+symfony server:stop</code></pre>
         <footer>
             <a href="https://symfony.com/doc/current/setup/built_in_web_server.html" target="_blank" class="info">Symfony built-in Web Server</a>
         </footer>

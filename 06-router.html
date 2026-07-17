@@ -14,15 +14,21 @@
         <p>Une fois de plus, Symfony propose 4 méthodes pour écrire des routes :</p>
         <ol>
             <li>Attributs (recommandé)</li>
-            <li>Annotations</li>
-            <li>YAML</li>
+            <li>YAML (fichier <code>config/routes.yaml</code>)</li>
             <li>XML</li>
             <li>PHP</li>
         </ol>
-        <p>Les routes sont définies dans le fichier routing.yml</p>
-        <p>Avec les annotations, il est possible de définir une route sur l’ensemble d’un controller puis des sous-routes sur ses actions.</p>
+        <p>
+            Avec les attributs, il est possible de définir une route sur l’ensemble d’un controller (préfixe commun)
+            puis des sous-routes sur chacune de ses actions.
+        </p>
+        <pre><code class="language-php">#[Route("/blog", name: "blog_")]
+class BlogController extends AbstractController
+{
+    #[Route("/list", name: "list")] // Route finale : /blog/list, nommée "blog_list"
+    public function list(): Response</code></pre>
         <footer>
-            <a href="https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/routing.html" target="_blank" class="info">Routing annotations</a>
+            <a href="https://symfony.com/doc/current/routing.html" target="_blank" class="info">Routing</a>
         </footer>
     </section>
 
@@ -40,11 +46,15 @@ public function testAction(string $title, string $username): Response</code></pr
     <section>
         <h3>Écrire les routes</h3>
         <p>Route avec contraintes :</p>
-        <pre><code class="language-php">#[Route("/test/{_locale}/{year}", name: "page_test", requirements=["_locale": "en|fr", "year": "\d+"])]
-public function testAction($_locale, $year)</code></pre>
-        <p>Route avec contraintes sur la méthode :</p>
-        <pre><code class="language-php">#[Route("/test", name: "page_test", methods=["GET", "POST"])]
-public function testAction()</code></pre>
+        <pre><code class="language-php">#[Route("/test/{_locale}/{year}", name: "page_test", requirements: ['_locale' => 'en|fr', 'year' => '\d+'])]
+public function testAction(string $_locale, int $year): Response</code></pre>
+        <p>Route avec contraintes sur la méthode HTTP :</p>
+        <pre><code class="language-php">#[Route("/test", name: "page_test", methods: ['GET', 'POST'])]
+public function testAction(): Response</code></pre>
+        <p>
+            ⚠️ Les options des attributs utilisent la syntaxe des <strong>arguments nommés</strong> de PHP 8
+            (<code class="language-php">requirements:</code> et non <code class="language-php">requirements=</code>).
+        </p>
     </section>
 
     <section>
