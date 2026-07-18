@@ -177,16 +177,14 @@ class Group
     <section>
         <h3>Cascade et orphanRemoval</h3>
         <p>Par défaut, Doctrine ne persiste ou ne supprime que l'entité sur laquelle on agit. Les options de <strong>cascade</strong> permettent de propager ces opérations aux entités associées :</p>
-        <pre><code class="language-php">#[ORM\OneToMany(
-    targetEntity: Feature::class,
-    mappedBy: "product",
+        <pre><code class="language-php">#[ORM\OneToMany(targetEntity: Feature::class, mappedBy: "product",
     cascade: ["persist", "remove"], // Propage persist() et remove() aux Feature
     orphanRemoval: true             // Supprime une Feature retirée de la collection
 )]
 private Collection $features;</code></pre>
         <ul>
-            <li><code class="language-php">cascade: ["persist"]</code> : persister le Product persiste aussi ses Feature</li>
-            <li><code class="language-php">cascade: ["remove"]</code> : supprimer le Product supprime ses Feature</li>
+            <li><code class="language-php">cascade: ["persist"]</code> : persister le Product et ses Feature</li>
+            <li><code class="language-php">cascade: ["remove"]</code> : supprimer le Product et ses Feature</li>
             <li><code class="language-php">orphanRemoval: true</code> : une Feature retirée de la collection (donc « orpheline ») est automatiquement supprimée</li>
         </ul>
         <p>⚠️ <code class="language-php">cascade: ["remove"]</code> agit au niveau PHP (Doctrine charge puis supprime chaque entité). Pour déléguer à la base, préférer une contrainte <code class="language-php">onDelete: "CASCADE"</code> sur la <code class="language-php">JoinColumn</code>.</p>
