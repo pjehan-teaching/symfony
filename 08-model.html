@@ -175,6 +175,125 @@ class Group
     </section>
 
     <section>
+        <h3>Cascade et orphanRemoval</h3>
+        <p>Par défaut, Doctrine ne persiste ou ne supprime que l'entité sur laquelle on agit. Les options de <strong>cascade</strong> permettent de propager ces opérations aux entités associées :</p>
+        <pre><code class="language-php">#[ORM\OneToMany(
+    targetEntity: Feature::class,
+    mappedBy: "product",
+    cascade: ["persist", "remove"], // Propage persist() et remove() aux Feature
+    orphanRemoval: true             // Supprime une Feature retirée de la collection
+)]
+private Collection $features;</code></pre>
+        <ul>
+            <li><code class="language-php">cascade: ["persist"]</code> : persister le Product persiste aussi ses Feature</li>
+            <li><code class="language-php">cascade: ["remove"]</code> : supprimer le Product supprime ses Feature</li>
+            <li><code class="language-php">orphanRemoval: true</code> : une Feature retirée de la collection (donc « orpheline ») est automatiquement supprimée</li>
+        </ul>
+        <p>⚠️ <code class="language-php">cascade: ["remove"]</code> agit au niveau PHP (Doctrine charge puis supprime chaque entité). Pour déléguer à la base, préférer une contrainte <code class="language-php">onDelete: "CASCADE"</code> sur la <code class="language-php">JoinColumn</code>.</p>
+        <footer>
+            <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/working-with-associations.html#transitive-persistence-cascade-operations" target="_blank" class="info">Cascade Operations</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Chargement : LAZY vs EAGER</h3>
+        <p>L'option <code class="language-php">fetch</code> définit <strong>quand</strong> les entités associées sont chargées depuis la base :</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mode</th>
+                    <th>Comportement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LAZY</strong> (défaut)</td>
+                    <td>L'association est chargée <strong>à la demande</strong>, lors du premier accès (via un proxy)</td>
+                </tr>
+                <tr>
+                    <td><strong>EAGER</strong></td>
+                    <td>L'association est <strong>toujours chargée</strong> en même temps que l'entité principale</td>
+                </tr>
+                <tr>
+                    <td><strong>EXTRA_LAZY</strong></td>
+                    <td>Permet des opérations (<code>count()</code>, <code>contains()</code>...) sans charger toute la collection</td>
+                </tr>
+            </tbody>
+        </table>
+        <pre><code class="language-php">#[ORM\ManyToOne(targetEntity: Product::class, fetch: "EAGER")]
+private ?Product $product = null;</code></pre>
+        <p>⚠️ Le mode LAZY peut provoquer le problème <strong>N+1 requêtes</strong> (une requête par entité chargée dans une boucle). La solution recommandée est de faire une <strong>jointure explicite</strong> (<code class="language-php">JOIN</code>) dans le QueryBuilder plutôt que de passer en EAGER.</p>
+        <footer>
+            <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/working-with-objects.html#by-lazy-loading" target="_blank" class="info">Lazy Loading</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Héritage avec Doctrine</h3>
+        <p>Doctrine permet de faire correspondre une <strong>hiérarchie de classes</strong> PHP à la base de données. Deux stratégies principales existent :</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stratégie</th>
+                    <th>Principe</th>
+                    <th>Compromis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Single Table</strong></td>
+                    <td>Toutes les classes dans une <strong>seule table</strong>, distinguées par une colonne discriminante</td>
+                    <td>Rapide (pas de jointure) mais colonnes des sous-classes nullables</td>
+                </tr>
+                <tr>
+                    <td><strong>Joined Table</strong></td>
+                    <td>Une <strong>table par classe</strong>, reliées par jointures</td>
+                    <td>Base normalisée mais lectures plus lentes (jointures)</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Une troisième approche, <strong>Mapped Superclass</strong>, permet de factoriser des propriétés communes dans une classe parente <em>qui n'est pas elle-même une entité</em> (pas de table dédiée).</p>
+        <footer>
+            <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/inheritance-mapping.html" target="_blank" class="info">Inheritance Mapping</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Héritage : Single Table</h3>
+        <p>Une colonne discriminante (<code>type</code>) indique la classe concrète de chaque ligne :</p>
+        <div class="container">
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">#[ORM\Entity]
+#[ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "type", type: "string")]
+#[ORM\DiscriminatorMap([
+    "person" => Person::class,
+    "employee" => Employee::class,
+])]
+class Person
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+}</code></pre>
+            </div>
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">#[ORM\Entity]
+class Employee extends Person
+{
+    #[ORM\Column]
+    private ?int $salary = null;
+}</code></pre>
+                <p>La table <code>person</code> contiendra les colonnes <code>id</code>, <code>type</code>, <code>name</code> et <code>salary</code> (nullable pour les lignes de type <code>person</code>).</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
         <h3>Renseigner les dates de création / MàJ</h3>
         <p>
             Dans une base de données, il est souvent nécessaire d’enregistrer les dates de création ou de mise à jour
