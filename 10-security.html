@@ -233,4 +233,63 @@ public function deleteAction($id)</code></pre>
         </footer>
     </section>
 
+    <section>
+        <h3>Au-delà des rôles : les Voters</h3>
+        <p>Les <strong>rôles</strong> répondent à « cet utilisateur est-il administrateur ? ». Mais de nombreuses règles dépendent du <strong>contexte</strong> : « cet utilisateur peut-il modifier <em>cet</em> article précis ? ».</p>
+        <p>C'est le rôle des <strong>Voters</strong> : centraliser la logique d'autorisation liée à une entité, plutôt que de la disperser dans les contrôleurs.</p>
+        <pre><code class="language-bash">php bin/console make:voter PostVoter</code></pre>
+        <p>Un Voter est appelé à chaque vérification (<code class="language-php">isGranted</code>, <code class="language-php">#[IsGranted]</code>...) et décide s'il est concerné, puis s'il accorde l'accès.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/security/voters.html" target="_blank" class="info">Security Voters</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Écrire un Voter</h3>
+        <p>Le Voter étend la classe <code class="language-php">Voter</code> et implémente deux méthodes :</p>
+        <pre><code class="language-php">class PostVoter extends Voter
+{
+    public const EDIT = 'POST_EDIT';
+
+    // Ce Voter est-il concerné par cette vérification ?
+    protected function supports(string $attribute, mixed $subject): bool
+    {
+        return $attribute === self::EDIT &amp;&amp; $subject instanceof Post;
+    }
+
+    // Décision : l'accès est-il accordé ?
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    {
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            return false; // Utilisateur non connecté
+        }
+
+        /** @var Post $post */
+        $post = $subject;
+
+        // Seul l'auteur peut modifier son article
+        return $user === $post->getAuthor();
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Utiliser un Voter</h3>
+        <p>Le Voter s'utilise <strong>exactement</strong> comme un rôle, en passant l'entité concernée comme sujet :</p>
+        <pre><code class="language-php">// Via l'attribut, en désignant le paramètre "post" comme sujet
+#[Route('/posts/{id}/edit', name: 'post_edit')]
+#[IsGranted('POST_EDIT', 'post')]
+public function edit(Post $post): Response
+{
+    // ...
+}</code></pre>
+        <p>Ou bien à l'intérieur du contrôleur :</p>
+        <pre><code class="language-php">$this->denyAccessUnlessGranted('POST_EDIT', $post);</code></pre>
+        <p>Dans un template Twig :</p>
+        <pre><code class="language-twig">{% if is_granted('POST_EDIT', post) %}
+    &lt;a href="{{ path('post_edit', {id: post.id}) }}"&gt;Modifier&lt;/a&gt;
+{% endif %}</code></pre>
+    </section>
+
 </section>
