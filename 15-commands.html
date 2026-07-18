@@ -39,20 +39,17 @@
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:send-reminders',
     description: 'Envoie les rappels aux utilisateurs',
 )]
-class SendRemindersCommand extends Command
+class SendRemindersCommand
 {
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    // Commande invocable : toute la logique tient dans __invoke()
+    public function __invoke(SymfonyStyle $io): int
     {
-        $io = new SymfonyStyle($input, $output);
-
         $io->title('Envoi des rappels');
         // ... logique métier
         $io->success('Rappels envoyés !');
@@ -60,7 +57,7 @@ class SendRemindersCommand extends Command
         return Command::SUCCESS;
     }
 }</code></pre>
-        <p>La méthode <code class="language-php">execute()</code> renvoie un <strong>code de sortie</strong>.</p>
+        <p>Le style <strong>invocable</strong> est celui recommandé par la documentation : la classe <strong>n'hérite plus</strong> de <code class="language-php">Command</code> (importée uniquement pour ses constantes) et <code class="language-php">__invoke()</code> renvoie un <strong>code de sortie</strong>.</p>
     </section>
 
     <section>
@@ -76,37 +73,40 @@ class SendRemindersCommand extends Command
 
     <section>
         <h3>Arguments et options</h3>
-        <p>Une commande accepte des <strong>arguments</strong> (positionnels) et des <strong>options</strong> (préfixées par <code>--</code>) :</p>
-        <pre><code class="language-php">protected function configure(): void
-{
-    $this
-        ->addArgument('email', InputArgument::REQUIRED, 'E-mail de l\'utilisateur')
-        ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simuler sans envoyer');
-}
+        <p>Une commande accepte des <strong>arguments</strong> (positionnels) et des <strong>options</strong> (préfixées par <code>--</code>). En style invocable, ils sont déclarés par des <strong>attributs</strong> sur les paramètres de <code class="language-php">__invoke()</code> :</p>
+        <pre style="max-height: 50vh"><code class="language-php">use Symfony\Component\Console\Attribute\Argument;
+use Symfony\Component\Console\Attribute\Option;
 
-protected function execute(InputInterface $input, OutputInterface $output): int
-{
-    $email = $input->getArgument('email');
-    $dryRun = $input->getOption('dry-run');
-    // ...
+public function __invoke(
+    SymfonyStyle $io,
+    #[Argument] string $email,                  // Argument requis
+    #[Option('dry-run')] bool $dryRun = false,  // Option : --dry-run
+): int {
+    $io->text($email);
+
+    if ($dryRun) {
+        // ... simuler sans envoyer
+    }
+
+    return Command::SUCCESS;
 }</code></pre>
         <pre><code class="language-bash">php bin/console app:send-reminders john@example.com --dry-run</code></pre>
+        <p>Un paramètre sans valeur par défaut est <strong>requis</strong> ; une valeur par défaut le rend facultatif.</p>
     </section>
 
     <section>
         <h3>Injecter des services</h3>
         <p>Comme tout service, une commande reçoit ses dépendances par le <strong>constructeur</strong> :</p>
         <pre style="max-height: 50vh"><code class="language-php">#[AsCommand(name: 'app:send-reminders')]
-class SendRemindersCommand extends Command
+class SendRemindersCommand
 {
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly MailerInterface $mailer,
     ) {
-        parent::__construct(); // Obligatoire quand on définit un constructeur
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(SymfonyStyle $io): int
     {
         foreach ($this->userRepository->findInactive() as $user) {
             // ... envoyer un rappel
@@ -115,15 +115,13 @@ class SendRemindersCommand extends Command
         return Command::SUCCESS;
     }
 }</code></pre>
-        <p>⚠️ Ne pas oublier <code class="language-php">parent::__construct()</code>, sinon la commande n'est pas initialisée correctement.</p>
+        <p>💡 Le style invocable n'héritant pas de <code class="language-php">Command</code>, il n'y a <strong>aucun</strong> <code class="language-php">parent::__construct()</code> à appeler : le constructeur ne sert qu'à l'injection.</p>
     </section>
 
     <section>
         <h3>SymfonyStyle</h3>
-        <p>La classe <code class="language-php">SymfonyStyle</code> offre une sortie soignée et cohérente :</p>
-        <pre><code class="language-php">$io = new SymfonyStyle($input, $output);
-
-$io->title('Traitement');
+        <p>La classe <code class="language-php">SymfonyStyle</code> offre une sortie soignée et cohérente. Reçue en paramètre de <code class="language-php">__invoke(SymfonyStyle $io)</code>, elle expose notamment :</p>
+        <pre style="max-height: 50vh"><code class="language-php">$io->title('Traitement');
 $io->section('Étape 1');
 $io->text('Message informatif');
 $io->success('Terminé avec succès');
