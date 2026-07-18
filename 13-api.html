@@ -1,0 +1,151 @@
+<section id="api">
+
+    <section>
+        <h2>API &amp; Sérialisation</h2>
+    </section>
+
+    <section>
+        <h3>Exposer une API</h3>
+        <p>
+            Une <strong>API REST</strong> renvoie des données structurées (généralement en <strong>JSON</strong>)
+            plutôt que du HTML, afin d'être consommée par une application front (JavaScript, mobile...) ou un autre service.
+        </p>
+        <p>
+            Le cœur du problème est la <strong>sérialisation</strong> : transformer un objet PHP (une entité Doctrine)
+            en JSON, et inversement.
+        </p>
+        <footer>
+            <a href="https://symfony.com/doc/current/serializer.html" target="_blank" class="info">Serializer</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <pre><code class="language-bash">composer require symfony/serializer-pack</code></pre>
+        <p>
+            Une fois le composant installé, la méthode <code class="language-php">$this->json()</code> du contrôleur
+            l'utilise <strong>automatiquement</strong> (au lieu d'un simple <code class="language-php">json_encode()</code>) :
+        </p>
+        <pre><code class="language-php">#[Route('/api/products', name: 'api_product_list', methods: ['GET'])]
+public function list(ProductRepository $repository): Response
+{
+    $products = $repository->findAll();
+
+    // Les entités sont sérialisées en JSON par le Serializer
+    return $this->json($products);
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Le service Serializer</h3>
+        <p>Pour un contrôle plus fin, on injecte <code class="language-php">SerializerInterface</code> :</p>
+        <div class="container">
+            <div class="col">
+                <h4>Objet → JSON</h4>
+                <pre><code class="language-php">$json = $serializer->serialize(
+    $product,
+    'json'
+);</code></pre>
+            </div>
+            <div class="col">
+                <h4>JSON → Objet</h4>
+                <pre><code class="language-php">$product = $serializer->deserialize(
+    $request->getContent(),
+    Product::class,
+    'json'
+);</code></pre>
+            </div>
+        </div>
+        <p>
+            En interne, le Serializer combine des <strong>normalizers</strong> (objet ↔ tableau) et des
+            <strong>encoders</strong> (tableau ↔ JSON / XML / CSV).
+        </p>
+    </section>
+
+    <section>
+        <h3>Les groupes de sérialisation</h3>
+        <p>
+            Par défaut, <strong>toutes</strong> les propriétés sont exposées. C'est un problème : on ne veut pas
+            renvoyer le mot de passe d'un utilisateur, ni provoquer des références circulaires entre entités liées.
+        </p>
+        <p>Les <strong>groupes</strong> permettent de choisir les propriétés exposées selon le contexte :</p>
+        <pre><code class="language-php">use Symfony\Component\Serializer\Attribute\Groups;
+
+class Product
+{
+    #[Groups(['product:read', 'product:write'])]
+    private ?string $name = null;
+
+    #[Groups(['product:read'])]
+    private ?int $id = null;
+
+    // Aucun groupe : jamais sérialisé via un groupe
+    private ?string $internalNote = null;
+}</code></pre>
+        <pre><code class="language-php">$json = $serializer->serialize($product, 'json', ['groups' => 'product:read']);</code></pre>
+    </section>
+
+    <section>
+        <h3>Recevoir des données : MapRequestPayload</h3>
+        <p>
+            Pour désérialiser automatiquement le corps JSON d'une requête en objet, Symfony fournit l'attribut
+            <code class="language-php">#[MapRequestPayload]</code> :
+        </p>
+        <pre><code class="language-php">use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+
+#[Route('/api/products', name: 'api_product_create', methods: ['POST'])]
+public function create(
+    #[MapRequestPayload] ProductDto $dto,
+    EntityManagerInterface $em
+): Response {
+    // $dto est désérialisé depuis le JSON ET validé automatiquement
+    $product = new Product();
+    $product->setName($dto->name);
+
+    $em->persist($product);
+    $em->flush();
+
+    return $this->json($product, Response::HTTP_CREATED);
+}</code></pre>
+        <p>
+            💡 On désérialise vers un <strong>DTO</strong> (Data Transfer Object) plutôt que directement vers l'entité,
+            afin de ne pas exposer sa structure interne et de valider les données entrantes.
+        </p>
+    </section>
+
+    <section>
+        <h3>Aller plus loin : API Platform</h3>
+        <p>
+            Pour une API complète, écrire manuellement chaque endpoint (liste, détail, création, modification,
+            suppression, pagination, filtres...) devient vite répétitif.
+        </p>
+        <p>
+            <strong>API Platform</strong> est un framework bâti sur Symfony qui génère une API REST (et GraphQL)
+            à partir de simples attributs sur les entités, avec documentation <strong>OpenAPI / Swagger</strong> automatique.
+        </p>
+        <pre><code class="language-php">use ApiPlatform\Metadata\ApiResource;
+
+#[ApiResource]
+class Product
+{
+    // Les opérations CRUD REST sont exposées automatiquement
+}</code></pre>
+        <footer>
+            <a href="https://api-platform.com/" target="_blank" class="info">API Platform</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Exercice</h3>
+        <div class="instructions">
+            <ol>
+                <li>Installer le composant Serializer</li>
+                <li>Créer un endpoint <code>GET /api/products</code> renvoyant la liste des produits en JSON</li>
+                <li>Ajouter des <strong>groupes</strong> pour n'exposer que <code>id</code>, <code>name</code> et <code>price</code></li>
+                <li>Créer un endpoint <code>POST /api/products</code> utilisant un <strong>DTO</strong> et <code>#[MapRequestPayload]</code></li>
+                <li>Vérifier les échanges JSON à l'aide du <strong>Profiler</strong> (onglet « Requêtes »)</li>
+            </ol>
+        </div>
+    </section>
+
+</section>
