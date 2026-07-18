@@ -7,11 +7,10 @@
     "watch": "webpack --mode=development --watch"
   },
   "dependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
     "babel-loader": "^10.1.1",
     "babel-plugin-prismjs": "^2.1.0",
-    "babel-preset-env": "^0.0.0",
     "css-loader": "^7.1.4",
     "file-loader": "^6.2.0",
     "prismjs": "^1.30.0",
