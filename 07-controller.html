@@ -14,8 +14,7 @@
     <section>
         <h3>Récupérer un paramètre</h3>
         <p>Il est possible de récupérer les paramètres de l’URL en définissant des paramètres dans la méthode :</p>
-        <pre><code class="language-php">
-#[Route("/test/{username}/{title}", name: "page_test")]
+        <pre><code class="language-php">#[Route("/test/{username}/{title}", name: "page_test")]
 public function testAction(string $username, string $title = "Default page title"): Response</code></pre>
         <p>
             ⚠️ En PHP, un paramètre <strong>optionnel</strong> doit toujours être placé <strong>après</strong> les
