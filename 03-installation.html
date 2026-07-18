@@ -60,13 +60,13 @@ composer update
                 Avec Symfony CLI (méthode recommandée)
                 <ul>
                     <li>Installer le CLI : <a href="https://symfony.com/download" target="_blank">https://symfony.com/download</a></li>
-                    <li><code class="language-bash">symfony new my_project_name --version="8.1.*" --webapp</code></li>
+                    <li><code class="language-bash">symfony new my_project_name --webapp</code></li>
                 </ul>
             </li>
         </ul>
         <p>
-            L'option <code class="language-bash">--version</code> accepte également <code class="language-bash">lts</code>
-            (dernière version LTS, actuellement la 7.4) ou <code class="language-bash">next</code>.
+            L'option <code class="language-bash">--version</code> permet de spécifier la version de Symfony à installer.
+            Par défaut, la dernière version stable est installée.
         </p>
         <p>
             Le drapeau <code class="language-bash">--webapp</code> permet d'installer un projet Symfony avec un
