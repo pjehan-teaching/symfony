@@ -52,10 +52,7 @@ php bin/console doctrine:migrations:migrate</code></pre>
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function __construct(
-        private readonly UserPasswordHasherInterface $hasher
-    ) {
-    }
+    public function __construct(private readonly UserPasswordHasherInterface $hasher) {}
 
     public function load(ObjectManager $manager): void
     {
