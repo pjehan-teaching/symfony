@@ -247,7 +247,8 @@ public function deleteAction($id)</code></pre>
     <section>
         <h3>Écrire un Voter</h3>
         <p>Le Voter étend la classe <code class="language-php">Voter</code> et implémente deux méthodes :</p>
-        <pre><code class="language-php">class PostVoter extends Voter
+        <pre style="max-height: 50vh"><code class="language-php">// src/Security/PostVoter.php
+class PostVoter extends Voter
 {
     public const EDIT = 'POST_EDIT';
 
