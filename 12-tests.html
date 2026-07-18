@@ -113,6 +113,10 @@ class PersonTest extends TestCase
         <pre><code class="language-bash">php bin/console --env=test doctrine:database:create
 php bin/console --env=test doctrine:migrations:migrate
 php bin/console --env=test doctrine:fixtures:load</code></pre>
+    </section>
+
+    <section>
+        <h3>Tests d'Intégration</h3>
         <p>Nous allons également utiliser un package pour s'assurer que la base de données soit ré-initialisée avant chaque test :</p>
         <pre><code class="language-bash">composer require --dev dama/doctrine-test-bundle</code></pre>
         <pre><code class="language-xml">&lt;!-- phpunit.xml.dist --&gt;
