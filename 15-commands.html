@@ -1,0 +1,156 @@
+<section id="commands">
+
+    <section>
+        <h2>Commandes console</h2>
+    </section>
+
+    <section>
+        <h3>Pourquoi créer ses commandes ?</h3>
+        <p>
+            Au-delà des commandes fournies par Symfony (<code>cache:clear</code>, <code>make:*</code>...), on crée
+            souvent ses <strong>propres commandes</strong> pour les tâches exécutées hors du contexte web :
+        </p>
+        <ul>
+            <li>Imports / exports de données</li>
+            <li>Tâches planifiées (<strong>CRON</strong>) : nettoyage, rappels par e-mail...</li>
+            <li>Traitements de maintenance ou de migration ponctuels</li>
+        </ul>
+        <p>Une commande a accès à <strong>tous les services</strong> de l'application (Doctrine, Mailer...).</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/console.html" target="_blank" class="info">Console</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Générer une commande</h3>
+        <pre><code class="language-bash">php bin/console make:command app:send-reminders</code></pre>
+        <p>
+            Cela crée une classe dans <code>src/Command/</code>. Une commande est identifiée par un
+            <strong>nom</strong> (convention <code>préfixe:action</code>) déclaré via l'attribut
+            <code class="language-php">#[AsCommand]</code>.
+        </p>
+        <p>La commande est ensuite listée par :</p>
+        <pre><code class="language-bash">php bin/console list</code></pre>
+    </section>
+
+    <section>
+        <h3>Structure d'une commande</h3>
+        <pre><code class="language-php">namespace App\Command;
+
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'app:send-reminders',
+    description: 'Envoie les rappels aux utilisateurs',
+)]
+class SendRemindersCommand extends Command
+{
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        $io->title('Envoi des rappels');
+        // ... logique métier
+        $io->success('Rappels envoyés !');
+
+        return Command::SUCCESS;
+    }
+}</code></pre>
+        <p>La méthode <code class="language-php">execute()</code> renvoie un <strong>code de sortie</strong>.</p>
+    </section>
+
+    <section>
+        <h3>Les codes de retour</h3>
+        <p>Le code renvoyé indique au système (et au CRON) si la commande a réussi :</p>
+        <ul>
+            <li><code class="language-php">Command::SUCCESS</code> : code 0 (succès)</li>
+            <li><code class="language-php">Command::FAILURE</code> : code 1 (échec)</li>
+            <li><code class="language-php">Command::INVALID</code> : code 2 (mauvaise utilisation)</li>
+        </ul>
+        <p>⚠️ Une commande qui n'échoue jamais explicitement masque ses erreurs : il faut renvoyer <code class="language-php">FAILURE</code> en cas de problème.</p>
+    </section>
+
+    <section>
+        <h3>Arguments et options</h3>
+        <p>Une commande accepte des <strong>arguments</strong> (positionnels) et des <strong>options</strong> (préfixées par <code>--</code>) :</p>
+        <pre><code class="language-php">protected function configure(): void
+{
+    $this
+        ->addArgument('email', InputArgument::REQUIRED, 'E-mail de l\'utilisateur')
+        ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Simuler sans envoyer');
+}
+
+protected function execute(InputInterface $input, OutputInterface $output): int
+{
+    $email = $input->getArgument('email');
+    $dryRun = $input->getOption('dry-run');
+    // ...
+}</code></pre>
+        <pre><code class="language-bash">php bin/console app:send-reminders john@example.com --dry-run</code></pre>
+    </section>
+
+    <section>
+        <h3>Injecter des services</h3>
+        <p>Comme tout service, une commande reçoit ses dépendances par le <strong>constructeur</strong> :</p>
+        <pre><code class="language-php">#[AsCommand(name: 'app:send-reminders')]
+class SendRemindersCommand extends Command
+{
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly MailerInterface $mailer,
+    ) {
+        parent::__construct(); // Obligatoire quand on définit un constructeur
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        foreach ($this->userRepository->findInactive() as $user) {
+            // ... envoyer un rappel
+        }
+
+        return Command::SUCCESS;
+    }
+}</code></pre>
+        <p>⚠️ Ne pas oublier <code class="language-php">parent::__construct()</code>, sinon la commande n'est pas initialisée correctement.</p>
+    </section>
+
+    <section>
+        <h3>SymfonyStyle</h3>
+        <p>La classe <code class="language-php">SymfonyStyle</code> offre une sortie soignée et cohérente :</p>
+        <pre><code class="language-php">$io = new SymfonyStyle($input, $output);
+
+$io->title('Traitement');
+$io->section('Étape 1');
+$io->text('Message informatif');
+$io->success('Terminé avec succès');
+$io->warning('Attention...');
+$io->error('Une erreur est survenue');
+
+// Interaction
+$name = $io->ask('Quel est votre nom ?');
+if ($io->confirm('Continuer ?')) { /* ... */ }
+
+// Barre de progression
+$io->progressStart(100);
+$io->progressAdvance();
+$io->progressFinish();</code></pre>
+    </section>
+
+    <section>
+        <h3>Exercice</h3>
+        <div class="instructions">
+            <ol>
+                <li>Créer une commande <code>app:users:count</code> affichant le nombre d'utilisateurs (injection du repository)</li>
+                <li>Ajouter un argument <code>role</code> optionnel pour filtrer par rôle</li>
+                <li>Ajouter une option <code>--format</code> (<code>text</code> ou <code>json</code>) pour le format de sortie</li>
+                <li>Utiliser <strong>SymfonyStyle</strong> (titre, tableau, message de succès)</li>
+                <li>Renvoyer <code>FAILURE</code> si le rôle demandé n'existe pas</li>
+            </ol>
+        </div>
+    </section>
+
+</section>
