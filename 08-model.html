@@ -292,6 +292,45 @@ class Employee extends Person
     </section>
 
     <section>
+        <h3>Héritage : Joined Table</h3>
+        <p>Seul l'attribut <code class="language-php">InheritanceType</code> change : chaque classe possède ici sa <strong>propre table</strong>.</p>
+        <div class="container">
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">#[ORM\Entity]
+#[ORM\InheritanceType("JOINED")]
+#[ORM\DiscriminatorColumn(name: "type", type: "string")]
+#[ORM\DiscriminatorMap([
+    "person" => Person::class,
+    "employee" => Employee::class,
+])]
+class Person
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+}</code></pre>
+            </div>
+            <div class="col" style="max-width: 450px;">
+                <pre><code class="language-php">#[ORM\Entity]
+class Employee extends Person
+{
+    #[ORM\Column]
+    private ?int $salary = null;
+}</code></pre>
+                <ul>
+                    <li>Table <code>person</code> : <code>id</code>, <code>type</code>, <code>name</code></li>
+                    <li>Table <code>employee</code> : <code>id</code> (clé primaire <em>et</em> étrangère vers <code>person</code>), <code>salary</code></li>
+                </ul>
+                <p>Charger un <code>Employee</code> nécessite une <strong>jointure</strong> entre les deux tables. Aucune colonne n'est nullable : la base reste <strong>normalisée</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
         <h3>Renseigner les dates de création / MàJ</h3>
         <p>
             Dans une base de données, il est souvent nécessaire d’enregistrer les dates de création ou de mise à jour
