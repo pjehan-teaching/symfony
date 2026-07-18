@@ -1,0 +1,172 @@
+<section id="mailer-messenger">
+
+    <section>
+        <h2>Mailer &amp; Messenger</h2>
+    </section>
+
+    <section>
+        <h3>Envoyer des e-mails</h3>
+        <p>Le composant <strong>Mailer</strong> permet d'envoyer des e-mails via un transport configurable :</p>
+        <pre><code class="language-bash">composer require symfony/mailer</code></pre>
+        <p>Le transport est défini par la variable d'environnement <code>MAILER_DSN</code> dans le fichier <code>.env</code> :</p>
+        <pre><code class="language-dotenv"># SMTP classique
+MAILER_DSN=smtp://user:pass@smtp.example.com:587
+
+# Fournisseur tiers (ex : Brevo, Mailgun...) via un pont dédié
+MAILER_DSN=brevo+api://KEY@default</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/mailer.html" target="_blank" class="info">Mailer</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Composer et envoyer un e-mail</h3>
+        <p>On injecte <code class="language-php">MailerInterface</code> puis on construit un objet <code class="language-php">Email</code> :</p>
+        <pre><code class="language-php">use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+
+public function contact(MailerInterface $mailer): Response
+{
+    $email = (new Email())
+        ->from('no-reply@example.com')
+        ->to('user@example.com')
+        ->subject('Bienvenue !')
+        ->text('Version texte du message')
+        ->html('&lt;p&gt;Version &lt;strong&gt;HTML&lt;/strong&gt; du message&lt;/p&gt;');
+
+    $mailer->send($email);
+
+    return $this->redirectToRoute('home');
+}</code></pre>
+        <p>💡 En développement, le <strong>Profiler</strong> intercepte les e-mails (onglet « E-mails ») : ils ne sont pas réellement envoyés.</p>
+    </section>
+
+    <section>
+        <h3>E-mails avec Twig</h3>
+        <p>La classe <code class="language-php">TemplatedEmail</code> permet d'utiliser un template Twig comme corps du message :</p>
+        <pre><code class="language-php">use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+
+$email = (new TemplatedEmail())
+    ->from('no-reply@example.com')
+    ->to($user->getEmail())
+    ->subject('Confirmez votre inscription')
+    ->htmlTemplate('emails/registration.html.twig')
+    ->context([
+        'user' => $user,
+        'confirmationUrl' => $url,
+    ]);
+
+$mailer->send($email);</code></pre>
+        <pre><code class="language-bash">composer require symfony/twig-bundle  # requis pour TemplatedEmail</code></pre>
+    </section>
+
+    <section>
+        <h3>Le problème du traitement synchrone</h3>
+        <p>
+            Envoyer un e-mail peut prendre <strong>plusieurs secondes</strong> (connexion au serveur SMTP). Si cela se
+            produit pendant une requête HTTP, l'utilisateur <strong>attend</strong> devant sa page.
+        </p>
+        <p>
+            La solution : déléguer ces tâches lentes à un <strong>traitement asynchrone</strong>. On répond
+            immédiatement à l'utilisateur, et le travail est effectué en arrière-plan.
+        </p>
+        <p>C'est le rôle du composant <strong>Messenger</strong>.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/messenger.html" target="_blank" class="info">Messenger</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Messenger : message et handler</h3>
+        <pre><code class="language-bash">composer require symfony/messenger</code></pre>
+        <p>Un <strong>message</strong> est un simple objet transportant des données :</p>
+        <pre><code class="language-php">namespace App\Message;
+
+class SendWelcomeEmail
+{
+    public function __construct(
+        public readonly int $userId
+    ) {
+    }
+}</code></pre>
+        <p>Un <strong>handler</strong> (attribut <code class="language-php">#[AsMessageHandler]</code>) traite le message :</p>
+        <pre><code class="language-php">namespace App\MessageHandler;
+
+use App\Message\SendWelcomeEmail;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+#[AsMessageHandler]
+class SendWelcomeEmailHandler
+{
+    public function __construct(private MailerInterface $mailer) {}
+
+    public function __invoke(SendWelcomeEmail $message): void
+    {
+        // ... récupérer l'utilisateur et envoyer l'e-mail
+    }
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Dispatcher un message</h3>
+        <p>On injecte <code class="language-php">MessageBusInterface</code> et on envoie le message sur le bus :</p>
+        <pre><code class="language-php">use Symfony\Component\Messenger\MessageBusInterface;
+
+public function register(MessageBusInterface $bus, User $user): Response
+{
+    // ... enregistrer l'utilisateur
+
+    // Réponse immédiate ; l'e-mail partira en arrière-plan
+    $bus->dispatch(new SendWelcomeEmail($user->getId()));
+
+    return $this->redirectToRoute('home');
+}</code></pre>
+        <p>Sans transport configuré, le handler s'exécute <strong>immédiatement</strong> (synchrone). C'est la configuration du transport qui rend le traitement asynchrone.</p>
+    </section>
+
+    <section>
+        <h3>Transport asynchrone</h3>
+        <p>Un <strong>transport</strong> définit où les messages sont mis en file d'attente (base de données, Redis, RabbitMQ...) :</p>
+        <pre><code class="language-dotenv"># .env — file d'attente stockée dans la base de données
+MESSENGER_TRANSPORT_DSN=doctrine://default</code></pre>
+        <pre><code class="language-yaml"># config/packages/messenger.yaml
+framework:
+    messenger:
+        transports:
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+        routing:
+            App\Message\SendWelcomeEmail: async</code></pre>
+        <p>Un <strong>worker</strong> consomme ensuite la file en continu (typiquement lancé par Supervisor en production) :</p>
+        <pre><code class="language-bash">php bin/console messenger:consume async -vv</code></pre>
+    </section>
+
+    <section>
+        <h3>Récapitulatif du flux asynchrone</h3>
+        <pre><code class="language-shell">Contrôleur
+   │  $bus->dispatch(new SendWelcomeEmail($id))
+   ▼
+Bus Messenger ──► Transport "async" (file en base de données)
+                          │
+                          ▼
+                  messenger:consume (worker en arrière-plan)
+                          │
+                          ▼
+                  Handler ──► Mailer ──► e-mail envoyé</code></pre>
+        <p>L'utilisateur reçoit sa réponse <strong>sans attendre</strong> l'envoi de l'e-mail.</p>
+    </section>
+
+    <section>
+        <h3>Exercice</h3>
+        <div class="instructions">
+            <ol>
+                <li>Installer le Mailer et envoyer un e-mail de test depuis un contrôleur</li>
+                <li>Vérifier son interception dans le <strong>Profiler</strong></li>
+                <li>Convertir le corps en <strong>TemplatedEmail</strong> avec un template Twig</li>
+                <li>Installer Messenger et créer un message <code>SendWelcomeEmail</code> + son handler</li>
+                <li>Configurer un transport <code>doctrine://default</code> et router le message vers <code>async</code></li>
+                <li>Lancer <code class="language-bash">messenger:consume</code> et vérifier l'envoi différé</li>
+            </ol>
+        </div>
+    </section>
+
+</section>
