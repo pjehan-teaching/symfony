@@ -84,13 +84,10 @@ $mailer->send($email);</code></pre>
 
 class SendWelcomeEmail
 {
-    public function __construct(
-        public readonly int $userId
-    ) {
-    }
+    public function __construct(public readonly int $userId) {}
 }</code></pre>
         <p>Un <strong>handler</strong> (attribut <code class="language-php">#[AsMessageHandler]</code>) traite le message :</p>
-        <pre><code class="language-php">namespace App\MessageHandler;
+        <pre style="max-height: 30vh"><code class="language-php">namespace App\MessageHandler;
 
 use App\Message\SendWelcomeEmail;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
