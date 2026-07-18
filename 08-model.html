@@ -456,4 +456,51 @@ $qb->select('p')
         </footer>
     </section>
 
+    <section>
+        <h3>Pagination</h3>
+        <p>
+            Charger tous les résultats d'une table pour n'en afficher que quelques-uns est inefficace. Doctrine fournit
+            la classe <code class="language-php">Paginator</code> qui limite la requête à une <strong>page</strong> et
+            calcule le nombre total d'éléments.
+        </p>
+        <p>Elle s'appuie sur deux méthodes de la <code class="language-php">Query</code> :</p>
+        <ul>
+            <li><code class="language-php">setFirstResult($offset)</code> : l'élément de départ (décalage)</li>
+            <li><code class="language-php">setMaxResults($limit)</code> : le nombre d'éléments par page</li>
+        </ul>
+        <p>Pour la page <em>n</em>, le décalage vaut donc <code class="language-php">($n - 1) * $limit</code>.</p>
+        <footer>
+            <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/current/tutorials/pagination.html" target="_blank" class="info">Doctrine Pagination</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Utiliser le Paginator</h3>
+        <p>On construit un <code class="language-php">Paginator</code> à partir d'une <code class="language-php">Query</code>, typiquement dans un Custom Repository :</p>
+        <pre style="max-height: 20vh"><code class="language-php">use Doctrine\ORM\Tools\Pagination\Paginator;
+
+public function findPaginated(int $page, int $limit = 10): Paginator
+{
+    $query = $this->createQueryBuilder('p')
+        ->orderBy('p.createdAt', 'DESC')
+        ->setFirstResult(($page - 1) * $limit)
+        ->setMaxResults($limit)
+        ->getQuery();
+
+    return new Paginator($query);
+}</code></pre>
+        <pre><code class="language-php">$paginator = $repository->findPaginated($page);
+
+$total = count($paginator);              // Nombre total d'éléments
+$nbPages = ceil($total / 10);           // Nombre de pages
+
+foreach ($paginator as $product) {      // Uniquement les éléments de la page
+    // ...
+}</code></pre>
+        <p>
+            💡 Si la requête fait une jointure vers une collection <em>to-many</em>,
+            passer <code class="language-php">new Paginator($query, fetchJoinCollection: true)</code> pour un comptage correct.
+        </p>
+    </section>
+
 </section>
