@@ -215,4 +215,32 @@ php bin/console list make
         </footer>
     </section>
 
+    <section>
+        <h3>Web Debug Toolbar &amp; Profiler</h3>
+        <p>Le pack de debug ajoute deux outils indispensables en développement :</p>
+        <pre><code class="language-bash">composer require --dev symfony/profiler-pack</code></pre>
+        <ul>
+            <li>La <strong>Web Debug Toolbar</strong> : une barre affichée en bas de chaque page en environnement <code>dev</code></li>
+            <li>Le <strong>Profiler</strong> : une interface détaillée accessible en cliquant sur la toolbar ou via l'URL <code>/_profiler</code></li>
+        </ul>
+        <p>⚠️ Ces outils ne sont installés qu'en <code class="language-bash">--dev</code> et <strong>désactivés en production</strong> : ils ne doivent jamais y être exposés.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/profiler.html" target="_blank" class="info">Profiler</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Que montre le Profiler ?</h3>
+        <p>Pour chaque requête, le Profiler permet d'analyser en détail :</p>
+        <ul>
+            <li>La <strong>requête</strong> et la <strong>réponse</strong> (headers, paramètres, session, cookies)</li>
+            <li>La <strong>route</strong> matchée et le contrôleur exécuté</li>
+            <li>Les <strong>requêtes SQL</strong> Doctrine (nombre, durée, requêtes dupliquées → détection du N+1)</li>
+            <li>Les <strong>performances</strong> (temps de traitement, chronologie des événements)</li>
+            <li>Les <strong>logs</strong>, les <strong>e-mails</strong> interceptés, l'utilisateur connecté et ses rôles</li>
+            <li>Le <strong>cache</strong>, les événements dispatchés, les formulaires...</li>
+        </ul>
+        <p>C'est l'outil de <strong>débogage</strong> le plus important au quotidien : il faut prendre le réflexe de le consulter dès qu'un comportement est inattendu.</p>
+    </section>
+
 </section>
