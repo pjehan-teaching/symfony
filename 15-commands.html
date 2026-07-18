@@ -35,7 +35,7 @@
 
     <section>
         <h3>Structure d'une commande</h3>
-        <pre><code class="language-php">namespace App\Command;
+        <pre style="max-height: 50vh"><code class="language-php">namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -96,7 +96,7 @@ protected function execute(InputInterface $input, OutputInterface $output): int
     <section>
         <h3>Injecter des services</h3>
         <p>Comme tout service, une commande reçoit ses dépendances par le <strong>constructeur</strong> :</p>
-        <pre><code class="language-php">#[AsCommand(name: 'app:send-reminders')]
+        <pre style="max-height: 50vh"><code class="language-php">#[AsCommand(name: 'app:send-reminders')]
 class SendRemindersCommand extends Command
 {
     public function __construct(
