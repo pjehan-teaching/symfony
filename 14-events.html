@@ -1,0 +1,193 @@
+<section id="events">
+
+    <section>
+        <h2>Événements</h2>
+    </section>
+
+    <section>
+        <h3>Le pattern Observer</h3>
+        <p>
+            Symfony repose sur un <strong>EventDispatcher</strong> : à des moments clés, un composant
+            <strong>émet un événement</strong>, et d'autres parties du code peuvent <strong>y réagir</strong> sans
+            que l'émetteur les connaisse.
+        </p>
+        <p>Cela permet de <strong>découpler</strong> le code : ajouter un comportement se fait sans modifier l'existant.</p>
+        <p>On distingue :</p>
+        <ul>
+            <li>Un <strong>Listener</strong> : réagit à un seul événement (via un attribut)</li>
+            <li>Un <strong>Subscriber</strong> : déclare lui-même la liste des événements qu'il écoute</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/event_dispatcher.html" target="_blank" class="info">EventDispatcher</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Les événements du Kernel</h3>
+        <p>Lors du traitement d'une requête, Symfony émet une série d'événements dans l'ordre :</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Événement</th>
+                    <th>Classe</th>
+                    <th>Moment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>kernel.request</code></td>
+                    <td>RequestEvent</td>
+                    <td>Au tout début (avant le routing)</td>
+                </tr>
+                <tr>
+                    <td><code>kernel.controller</code></td>
+                    <td>ControllerEvent</td>
+                    <td>Contrôleur résolu, avant son exécution</td>
+                </tr>
+                <tr>
+                    <td><code>kernel.view</code></td>
+                    <td>ViewEvent</td>
+                    <td>Le contrôleur n'a pas renvoyé de Response</td>
+                </tr>
+                <tr>
+                    <td><code>kernel.response</code></td>
+                    <td>ResponseEvent</td>
+                    <td>Avant l'envoi de la réponse</td>
+                </tr>
+                <tr>
+                    <td><code>kernel.exception</code></td>
+                    <td>ExceptionEvent</td>
+                    <td>Une exception a été levée</td>
+                </tr>
+                <tr>
+                    <td><code>kernel.terminate</code></td>
+                    <td>TerminateEvent</td>
+                    <td>Après l'envoi de la réponse au client</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h3>Créer un Listener</h3>
+        <p>
+            Un Listener est une classe avec l'attribut <code class="language-php">#[AsEventListener]</code>. Ici, on ajoute
+            un en-tête HTTP personnalisé à chaque réponse :
+        </p>
+        <pre><code class="language-php">namespace App\EventListener;
+
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+
+#[AsEventListener]
+final class ResponseHeaderListener
+{
+    public function __invoke(ResponseEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return; // Ignorer les sous-requêtes
+        }
+
+        $event->getResponse()->headers->set('X-Powered-By', 'Symfony');
+    }
+}</code></pre>
+        <p>Grâce à l'autowiring, le Listener est <strong>automatiquement enregistré</strong> : aucune configuration requise.</p>
+    </section>
+
+    <section>
+        <h3>Créer un Subscriber</h3>
+        <p>Un Subscriber implémente <code class="language-php">EventSubscriberInterface</code> et déclare ses événements :</p>
+        <pre><code class="language-php">namespace App\EventSubscriber;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+class ExceptionSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::EXCEPTION => 'onKernelException',
+        ];
+    }
+
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $exception = $event->getThrowable();
+        // Ex : journaliser l'erreur ou renvoyer une réponse JSON pour une API
+    }
+}</code></pre>
+        <p>💡 <code class="language-bash">php bin/console debug:event-dispatcher</code> liste tous les listeners par événement.</p>
+    </section>
+
+    <section>
+        <h3>Événements personnalisés</h3>
+        <p>On peut aussi créer ses propres événements métier. D'abord la classe d'événement :</p>
+        <pre><code class="language-php">namespace App\Event;
+
+use App\Entity\Order;
+use Symfony\Contracts\EventDispatcher\Event;
+
+class OrderPlacedEvent extends Event
+{
+    public function __construct(
+        public readonly Order $order
+    ) {
+    }
+}</code></pre>
+        <p>Puis on le dispatche via <code class="language-php">EventDispatcherInterface</code> :</p>
+        <pre><code class="language-php">public function checkout(EventDispatcherInterface $dispatcher, Order $order): Response
+{
+    // ... enregistrer la commande
+
+    $dispatcher->dispatch(new OrderPlacedEvent($order));
+    // Un listener pourra alors envoyer l'e-mail, mettre à jour un stock, etc.
+}</code></pre>
+    </section>
+
+    <section>
+        <h3>Listener ou Subscriber ?</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Listener</th>
+                    <th>Subscriber</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Déclaration</strong></td>
+                    <td>Attribut <code>#[AsEventListener]</code></td>
+                    <td>Méthode <code>getSubscribedEvents()</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Où voir les événements écoutés ?</strong></td>
+                    <td>Dans la configuration / l'attribut</td>
+                    <td>Dans la classe elle-même</td>
+                </tr>
+                <tr>
+                    <td><strong>Idéal pour</strong></td>
+                    <td>Réagir à un seul événement</td>
+                    <td>Regrouper une logique liée à plusieurs événements</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Les deux sont fonctionnellement équivalents : le Subscriber est simplement plus <strong>autonome</strong> et réutilisable.</p>
+    </section>
+
+    <section>
+        <h3>Exercice</h3>
+        <div class="instructions">
+            <ol>
+                <li>Créer un Listener sur <code>kernel.response</code> qui ajoute un en-tête <code>X-Response-Time</code></li>
+                <li>Créer un Subscriber écoutant <code>kernel.exception</code> qui journalise chaque exception</li>
+                <li>Définir un événement métier <code>UserRegisteredEvent</code> émis à l'inscription</li>
+                <li>Écrire un listener qui réagit à cet événement (ex : préparer l'envoi d'un e-mail de bienvenue)</li>
+                <li>Vérifier l'enregistrement avec <code class="language-bash">debug:event-dispatcher</code></li>
+            </ol>
+        </div>
+    </section>
+
+</section>
