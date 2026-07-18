@@ -86,7 +86,7 @@ services:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads'</code></pre>
         <p>
-            Ici, seul l'argument <code>$targetDirectory</code> est déclaré car il ne s'agit pas d'un service mais d'un
+            Ici, seul l'argument <code class="language-yaml">$targetDirectory</code> est déclaré car il ne s'agit pas d'un service mais d'un
             <strong>paramètre scalaire</strong> : l'autowiring ne peut pas le deviner.
         </p>
         <footer>
