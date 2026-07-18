@@ -97,7 +97,7 @@ final class ResponseHeaderListener
     <section>
         <h3>Créer un Subscriber</h3>
         <p>Un Subscriber implémente <code class="language-php">EventSubscriberInterface</code> et déclare ses événements :</p>
-        <pre><code class="language-php">namespace App\EventSubscriber;
+        <pre style="max-height: 50vh"><code class="language-php">namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -131,10 +131,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class OrderPlacedEvent extends Event
 {
-    public function __construct(
-        public readonly Order $order
-    ) {
-    }
+    public function __construct(public readonly Order $order) {}
 }</code></pre>
         <p>Puis on le dispatche via <code class="language-php">EventDispatcherInterface</code> :</p>
         <pre><code class="language-php">public function checkout(EventDispatcherInterface $dispatcher, Order $order): Response
