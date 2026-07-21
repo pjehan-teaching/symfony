@@ -174,17 +174,4 @@ class ProductCreatedEvent extends Event
         <p>Les deux sont fonctionnellement équivalents : le Subscriber est simplement plus <strong>autonome</strong> et réutilisable.</p>
     </section>
 
-    <section>
-        <h3>Exercice</h3>
-        <div class="instructions">
-            <ol>
-                <li>Créer un Listener sur <code>kernel.response</code> qui ajoute un en-tête <code>X-Response-Time</code></li>
-                <li>Créer un Subscriber écoutant <code>kernel.exception</code> qui journalise chaque exception</li>
-                <li>Définir un événement métier <code>UserRegisteredEvent</code> émis à l'inscription</li>
-                <li>Écrire un listener qui réagit à cet événement (ex : préparer l'envoi d'un e-mail de bienvenue)</li>
-                <li>Vérifier l'enregistrement avec <code class="language-bash">debug:event-dispatcher</code></li>
-            </ol>
-        </div>
-    </section>
-
 </section>

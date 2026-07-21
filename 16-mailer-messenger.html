@@ -152,18 +152,4 @@ Bus Messenger ──► Transport "async" (file en base de données)
         <p>L'utilisateur reçoit sa réponse <strong>sans attendre</strong> l'envoi de l'e-mail.</p>
     </section>
 
-    <section>
-        <h3>Exercice</h3>
-        <div class="instructions">
-            <ol>
-                <li>Installer le Mailer et envoyer un e-mail de test depuis un contrôleur</li>
-                <li>Vérifier son interception dans le <strong>Profiler</strong></li>
-                <li>Convertir le corps en <strong>TemplatedEmail</strong> avec un template Twig</li>
-                <li>Installer Messenger et créer un message <code>SendWelcomeEmail</code> + son handler</li>
-                <li>Configurer un transport <code>doctrine://default</code> et router le message vers <code>async</code></li>
-                <li>Lancer <code class="language-bash">messenger:consume</code> et vérifier l'envoi différé</li>
-            </ol>
-        </div>
-    </section>
-
 </section>
