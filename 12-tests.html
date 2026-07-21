@@ -208,4 +208,69 @@ php bin/console --env=test doctrine:fixtures:load</code></pre>
         </ul>
     </section>
 
+    <section>
+        <h3>Tests End-to-End (E2E)</h3>
+        <p>
+            Contrairement aux tests d'application, qui simulent des requêtes HTTP sans exécuter de JavaScript,
+            les tests <strong>E2E</strong> pilotent un <strong>vrai navigateur</strong> (headless ou non).
+        </p>
+        <ul>
+            <li>Le JavaScript de la page est réellement exécuté</li>
+            <li>On peut tester des interactions complexes (clics, formulaires dynamiques, AJAX, animations...)</li>
+            <li>Le test se rapproche le plus possible de l'expérience utilisateur réelle</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Symfony Panther</h3>
+        <p>
+            <strong>Panther</strong> est la bibliothèque officielle de Symfony pour écrire des tests E2E : elle
+            pilote un navigateur Chrome headless via le protocole WebDriver, tout en réutilisant l'API du
+            <code class="language-php">Client</code> des tests d'application (<code class="language-php">Crawler</code>, assertions...).
+        </p>
+        <pre><code class="language-bash">composer require --dev symfony/panther</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/testing/end_to_end.html" target="_blank" class="info">
+                Symfony Panther
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Écrire un test E2E</h3>
+        <pre><code class="language-php">use Symfony\Component\Panther\PantherTestCase;
+
+class PersonPantherTest extends PantherTestCase
+{
+    public function testPersonList(): void
+    {
+        $client = static::createPantherClient();
+        $client->request('GET', '/person');
+
+        $this->assertSelectorTextContains('h1', 'Persons list');
+    }
+}</code></pre>
+        <p>Ce test s'exécute exactement comme un test d'application, mais dans un vrai navigateur.</p>
+    </section>
+
+    <section>
+        <h3>Interagir avec la page</h3>
+        <p>Panther permet de simuler des interactions utilisateur réelles, y compris déclenchées par du JavaScript :</p>
+        <pre><code class="language-php">public function testAddPersonDynamically(): void
+{
+    $client = static::createPantherClient();
+    $crawler = $client->request('GET', '/person/new');
+
+    $client->submitForm('Ajouter', [
+        'person[firstName]' => 'John',
+        'person[lastName]' => 'Doe',
+    ]);
+
+    // Attendre qu'un élément ajouté dynamiquement en JS apparaisse
+    $client->waitFor('.person-added-toast');
+
+    $this->assertSelectorTextContains('.person-list li:last-child', 'John Doe');
+}</code></pre>
+    </section>
+
 </section>
