@@ -72,6 +72,7 @@ composer require validator
         <p>Par défaut, le formulaire renvoie les données au Controller qui l’a affiché. Il est alors possible de sauvegarder les données de cette façon :</p>
         <pre style="max-height: 40vh"><code class="language-php">public function new(Request $request, EntityManagerInterface $em): Response
 {
+    $author = new Author();
     $form = $this->createFormBuilder($author)
                 ->add('firstname', TextType::class)
                 ->add('lastname', TextType::class)
@@ -80,8 +81,6 @@ composer require validator
 
     $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()) {
-        $author = $form->getData();
-
         $em->persist($author);
         $em->flush();
 
