@@ -126,20 +126,20 @@ class ExceptionSubscriber implements EventSubscriberInterface
         <p>On peut aussi créer ses propres événements métier. D'abord la classe d'événement :</p>
         <pre><code class="language-php">namespace App\Event;
 
-use App\Entity\Order;
+use App\Entity\Product;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class OrderPlacedEvent extends Event
+class ProductCreatedEvent extends Event
 {
-    public function __construct(public readonly Order $order) {}
+    public function __construct(public readonly Product $product) {}
 }</code></pre>
         <p>Puis on le dispatche via <code class="language-php">EventDispatcherInterface</code> :</p>
-        <pre><code class="language-php">public function checkout(EventDispatcherInterface $dispatcher, Order $order): Response
+        <pre><code class="language-php">public function create(EventDispatcherInterface $dispatcher, Product $product): Response
 {
-    // ... enregistrer la commande
+    // ... enregistrer le produit
 
-    $dispatcher->dispatch(new OrderPlacedEvent($order));
-    // Un listener pourra alors envoyer l'e-mail, mettre à jour un stock, etc.
+    $dispatcher->dispatch(new ProductCreatedEvent($product));
+    // Un listener pourra alors notifier les abonnés, mettre à jour un index de recherche, etc.
 }</code></pre>
     </section>
 

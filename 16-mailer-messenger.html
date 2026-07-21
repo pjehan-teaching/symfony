@@ -95,7 +95,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 class SendWelcomeEmailHandler
 {
-    public function __construct(private MailerInterface $mailer) {}
+    public function __construct(private readonly MailerInterface $mailer) {}
 
     public function __invoke(SendWelcomeEmail $message): void
     {
