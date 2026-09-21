@@ -81,16 +81,24 @@
                 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap" target="_blank">
                     ImportMap
                 </a>
-                (standardisé par le W3C).
+                (standardisé par le W3C). Aucune étape de build, aucune dépendance Node.js.
             </li>
             <li>
-                <strong>Webpack Encore</strong> : Utilise Webpack pour gérer les assets.
+                <strong>Symfony Reprise</strong> : Intègre à Symfony les bundlers JavaScript modernes,
+                <strong>Vite</strong> et <strong>Rsbuild</strong>. Il succède à Webpack Encore, que l'on
+                rencontre encore dans les projets existants.
             </li>
         </ol>
         <p>
-            La méthode AssetMapper est la <strong>méthode recommandée</strong> dans la doc de Symfony.
-            Elle est <strong>plus simple</strong> à mettre en place, mais <strong>moins puissante</strong> que Webpack Encore.
+            AssetMapper est la <strong>méthode recommandée</strong> dans la doc de Symfony. Elle est
+            <strong>plus simple</strong> à mettre en place, mais un bundler reste utile pour compiler du
+            TypeScript, du JSX ou pour découper le code.
         </p>
+        <footer>
+            <a href="https://symfony.com/doc/current/frontend.html" target="_blank" class="info">
+                Front-end Tools
+            </a>
+        </footer>
     </section>
 
     <section>
@@ -129,6 +137,62 @@ import '../styles/app.css';</code></pre>
         <p>
             Le fichier <code>importmap.php</code> sera automatiquement mis à jour.
         </p>
+    </section>
+
+    <section>
+        <h3>Symfony Reprise</h3>
+        <p>
+            Reprise ne remplace pas le bundler : Vite et Rsbuild gèrent déjà Sass, TypeScript, JSX, le découpage
+            du code et le rechargement à chaud. Reprise ajoute la <strong>glu côté Symfony</strong> : points
+            d'entrée multiples, versionnage des assets, serveur de développement et contrôleurs Stimulus.
+        </p>
+        <pre><code class="language-bash">composer require symfony/reprise
+npm install @symfony/reprise --save-dev</code></pre>
+        <p>
+            Les points d'entrée se déclarent ensuite dans la configuration du bundler :
+        </p>
+        <pre><code class="language-js">// vite.config.js
+import { defineConfig } from 'vite'
+import Symfony from '@symfony/reprise/vite'
+
+export default defineConfig({
+  input: { app: './assets/app.js' },
+  plugins: [Symfony()],
+})</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/reprise.html" target="_blank" class="warning">
+                Reprise est expérimental : son API peut encore changer
+            </a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Symfony Reprise</h3>
+        <p>
+            Reprise génère un fichier <code>entrypoints.json</code> que Twig utilise pour écrire les balises
+            <code class="language-html">&lt;script&gt;</code> et <code class="language-html">&lt;link&gt;</code> :
+        </p>
+        <pre><code class="language-twig">{% block stylesheets %}
+    {{ reprise_entry_link_tags('app') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ reprise_entry_script_tags('app') }}
+{% endblock %}</code></pre>
+        <p>
+            En développement, la commande <code class="language-bash">vite</code> (ou
+            <code class="language-bash">rsbuild dev</code>) lance le serveur du bundler : Twig pointe
+            automatiquement vers lui, avec rechargement à chaud.
+        </p>
+        <p>
+            ⚠️ Dans un projet utilisant encore Webpack Encore, les fonctions Twig gardent la même forme :
+            le préfixe <code class="language-twig">encore_</code> devient <code class="language-twig">reprise_</code>.
+        </p>
+        <footer>
+            <a href="https://symfony.com/doc/current/reprise.html" target="_blank" class="info">
+                Documentation Symfony Reprise
+            </a>
+        </footer>
     </section>
 
     <section>
