@@ -80,7 +80,7 @@ use Symfony\Component\Console\Attribute\Option;
 public function __invoke(
     SymfonyStyle $io,
     #[Argument] string $email,                  // Argument requis
-    #[Option('dry-run')] bool $dryRun = false,  // Option : --dry-run
+    #[Option(description: 'Simuler')] bool $dryRun = false,  // --dry-run
 ): int {
     $io->text($email);
 

@@ -221,7 +221,8 @@ export default defineConfig({
 
     <section>
         <h3>Boucles</h3>
-        <pre><code class="language-twig">{% for user in users if user.active %}
+        <p>Pour ne parcourir qu'une partie d'une collection, on utilise le filtre <code class="language-twig">filter</code> :</p>
+        <pre><code class="language-twig">{% for user in users|filter(user =&gt; user.active) %}
     &lt;li&gt;{{ user.username|e }}&lt;/li&gt;
 {% else %} {# Aucun utilisateur actif #}
     &lt;li&gt;Aucun utilisateur actif&lt;/li&gt;

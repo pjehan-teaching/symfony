@@ -246,7 +246,11 @@ public function deleteAction($id)</code></pre>
 
     <section>
         <h3>Écrire un Voter</h3>
-        <p>Le Voter étend la classe <code class="language-php">Voter</code> et implémente deux méthodes :</p>
+        <p>
+            Le Voter étend la classe <code class="language-php">Voter</code> et implémente deux méthodes.
+            Depuis Symfony 8, un quatrième paramètre <code class="language-php">?Vote $vote</code> permet de
+            joindre un motif à la décision.
+        </p>
         <pre style="max-height: 50vh"><code class="language-php">// src/Security/PostVoter.php
 class PostVoter extends Voter
 {
@@ -259,7 +263,8 @@ class PostVoter extends Voter
     }
 
     // Décision : l'accès est-il accordé ?
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject,
+        TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
         if (!$user instanceof User) {
