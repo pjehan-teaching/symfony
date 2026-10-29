@@ -1,0 +1,412 @@
+<section id="mcp">
+
+    <section>
+        <h2>MCP - Model Context Protocol</h2>
+    </section>
+
+    <section>
+        <h3>Le problème</h3>
+        <p>Un assistant IA (Claude, ChatGPT, Copilot...) ne connaît ni <strong>vos données</strong> ni <strong>vos applications</strong>.</p>
+        <ul>
+            <li>Chaque assistant a sa propre façon de brancher des outils</li>
+            <li>Chaque application doit écrire <strong>une intégration par assistant</strong></li>
+            <li>Résultat : <strong>N assistants × M applications</strong> d'intégrations à maintenir</li>
+        </ul>
+        <p><mark>MCP standardise cette connexion : une application expose un serveur MCP, tous les clients compatibles peuvent l'utiliser.</mark></p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/docs/getting-started/intro" target="_blank" class="info">Introduction à MCP</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Qu'est-ce que MCP ?</h3>
+        <ul>
+            <li>Protocole <strong>ouvert</strong> créé par Anthropic (fin 2024), aujourd'hui adopté par tout l'écosystème</li>
+            <li>Messages au format <strong>JSON-RPC 2.0</strong></li>
+            <li>Inspiré du <strong>Language Server Protocol</strong> (LSP) : un protocole commun entre éditeurs et langages</li>
+            <li>Versionné par date : la révision actuelle est <code>2026-07-28</code></li>
+        </ul>
+        <p>Analogie : MCP est le <strong>« port USB-C »</strong> des applications pour l'IA.</p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/latest" target="_blank" class="info">Spécification</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Architecture</h3>
+        <ul>
+            <li><strong>Host</strong> : l'application d'IA que l'utilisateur manipule (Claude Desktop, Claude Code, VS Code, Cursor...)</li>
+            <li><strong>Client</strong> : le connecteur, intégré au host, qui parle à <em>un</em> serveur</li>
+            <li><strong>Serveur</strong> : le programme qui expose des capacités (<mark>c'est ce que nous allons écrire</mark>)</li>
+        </ul>
+        <p>Un host peut ouvrir plusieurs clients, donc se connecter à plusieurs serveurs en même temps.</p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/architecture" target="_blank" class="info">Architecture</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Ce qu'un serveur peut exposer</h3>
+        <table>
+            <thead>
+                <tr><th>Primitive</th><th>Rôle</th><th>Piloté par</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Tools</strong></td><td>Fonctions que l'IA peut exécuter (chercher, créer, calculer...)</td><td>Le modèle</td></tr>
+                <tr><td><strong>Resources</strong></td><td>Données à lire pour enrichir le contexte (fichier, fiche, schéma...)</td><td>L'application</td></tr>
+                <tr><td><strong>Prompts</strong></td><td>Modèles de messages réutilisables</td><td>L'utilisateur</td></tr>
+            </tbody>
+        </table>
+        <p>Les <strong>tools</strong> sont de loin la primitive la plus utilisée.</p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/server" target="_blank" class="info">Server features</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Les transports</h3>
+        <p>Deux façons standard de transporter les messages :</p>
+        <ul>
+            <li><strong>stdio</strong> : le client lance le serveur comme <strong>sous-processus</strong> local et échange via stdin / stdout. Idéal en développement et pour les outils locaux.</li>
+            <li><strong>Streamable HTTP</strong> : chaque message est un <strong>POST HTTP</strong> vers un endpoint unique (ex. <code>/mcp</code>). Pour les serveurs distants.</li>
+        </ul>
+        <p>⚠️ L'ancien transport <strong>HTTP+SSE</strong> est déprécié.</p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/transports" target="_blank" class="info">Transports</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Ce qui a changé récemment</h3>
+        <p>La révision <code>2026-07-28</code> rend le protocole <strong>sans état</strong> :</p>
+        <ul>
+            <li>Plus de handshake <code>initialize</code> : chaque requête porte sa <strong>version</strong> et les <strong>capacités du client</strong> dans <code>_meta</code></li>
+            <li>Plus de session (<code>Mcp-Session-Id</code> supprimé) : un serveur MCP se comporte comme une API HTTP classique</li>
+            <li>Nouvelle méthode <code>server/discover</code> pour connaître version, capacités et identité d'un serveur</li>
+            <li>Tasks (tâches longues) déplacées dans une <strong>extension</strong></li>
+            <li><strong>Roots, Sampling et Logging</strong> sont dépréciés</li>
+        </ul>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" class="info">Key changes</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Ce qui a changé récemment</h3>
+        <ul>
+            <li>Les requêtes serveur → client (<code>elicitation</code>...) passent par un modèle <strong>multi-aller-retour</strong> : le serveur répond « j'ai besoin d'une information » et le client <strong>rejoue</strong> la requête avec la réponse</li>
+            <li>Les listes (<code>tools/list</code>...) indiquent une durée de cache (<code>ttlMs</code>, <code>cacheScope</code>)</li>
+            <li>Authentification : <strong>Client ID Metadata Documents</strong> préférés à l'enregistrement dynamique de clients (DCR, déprécié)</li>
+        </ul>
+        <p><mark>Les tutoriels antérieurs à mi-2026 décrivent souvent <code>initialize</code> et les sessions : ils sont en partie obsolètes.</mark></p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" class="info">Key changes</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Un échange concret : appeler un tool</h3>
+        <pre style="font-size: 0.55em;"><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "current-time",
+    "arguments": { "format": "H:i" },
+    "_meta": {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {}
+    }
+  }
+}</code></pre>
+        <p>La réponse contient un tableau <code>content</code> (texte, image...) lu par le modèle :</p>
+        <pre style="font-size: 0.55em;"><code class="language-json">{ "jsonrpc": "2.0", "id": 1,
+  "result": { "resultType": "complete", "content": [{ "type": "text", "text": "14:32" }] } }</code></pre>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/tools" target="_blank" class="info">Tools</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Le cycle de vie d'un tool</h3>
+        <ol>
+            <li>Le client appelle <code>tools/list</code> : le serveur renvoie nom, <strong>description</strong> et <strong>schéma JSON</strong> des paramètres</li>
+            <li>Le host donne ces descriptions au modèle</li>
+            <li>Le modèle décide d'appeler un tool et produit les arguments</li>
+            <li>Le client envoie <code>tools/call</code> (avec la validation de l'utilisateur)</li>
+            <li>Le résultat revient dans le contexte du modèle</li>
+        </ol>
+        <p><mark>La qualité des descriptions détermine la qualité de l'usage du tool par le modèle.</mark></p>
+    </section>
+
+    <section>
+        <h3>Sécurité : les principes de la spécification</h3>
+        <ul>
+            <li>Un tool = <strong>exécution de code arbitraire</strong> : l'utilisateur doit <strong>consentir</strong> à chaque usage sensible</li>
+            <li>Les descriptions de tools d'un serveur tiers sont <strong>non fiables</strong> (risque d'injection de prompt)</li>
+            <li>Pour un serveur distant : authentification <strong>OAuth 2.1</strong> ; le serveur MCP est un <em>resource server</em> : il <strong>ne gère pas l'authentification</strong>, il vérifie seulement les tokens délivrés par un serveur d'autorisation</li>
+            <li>Principe du moindre privilège : n'exposez que ce qui est nécessaire, préférez la <strong>lecture seule</strong></li>
+        </ul>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization" target="_blank" class="warning">Authorization</a>
+        </footer>
+    </section>
+
+    <section>
+        <h2>Le MCP Bundle de Symfony</h2>
+    </section>
+
+    <section>
+        <h3>Présentation</h3>
+        <p>Le <strong>MCP Bundle</strong> intègre le SDK PHP officiel (<code>mcp/sdk</code>) dans Symfony :</p>
+        <ul>
+            <li>Capacités déclarées par des <strong>attributs PHP</strong> sur des services</li>
+            <li>Transports <strong>stdio</strong> et <strong>HTTP</strong> prêts à l'emploi</li>
+            <li>Accès à tout le conteneur : Doctrine, Security, Mailer...</li>
+            <li>Commande <code>debug:mcp</code> et panneau dans le Profiler</li>
+        </ul>
+        <p>Une capacité = <strong>une classe PHP</strong> avec un attribut.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Installation</h3>
+        <pre><code class="language-bash">composer require symfony/mcp-bundle</code></pre>
+        <p>Pour exposer le serveur en HTTP, ajoutez la route :</p>
+        <pre class="line-numbers"><code class="language-yaml"># config/routes.yaml
+mcp:
+    resource: .
+    type: mcp</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Configuration</h3>
+        <pre class="line-numbers"><code class="language-yaml"># config/packages/mcp.yaml
+mcp:
+    servers:
+        default:
+            name: 'my-app'
+            transports:
+                stdio: true   # symfony console mcp:server default
+                http: true    # route /mcp/default
+            registry: ['App\Mcp\']</code></pre>
+        <ul>
+            <li><code>registry</code> est <strong>obligatoire</strong> : le serveur n'expose que ce qu'il liste (namespace, classe ou <code>*</code>)</li>
+            <li>On peut déclarer <strong>plusieurs serveurs</strong> nommés, avec des capacités différentes</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Mon premier tool</h3>
+        <pre class="line-numbers"><code class="language-php">namespace App\Mcp;
+
+use Mcp\Capability\Attribute\McpTool;
+use Mcp\Capability\Attribute\Schema;
+
+final class CurrentTimeTool
+{
+    #[McpTool(name: 'current-time', description: 'Donne l\'heure actuelle (UTC)')]
+    public function __invoke(
+        #[Schema(description: 'Format de date PHP')]
+        string $format = 'Y-m-d H:i:s',
+    ): string {
+        return (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))-&gt;format($format);
+    }
+}</code></pre>
+        <p>Le <strong>schéma JSON</strong> des paramètres est généré à partir des types PHP.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Un tool métier avec injection</h3>
+        <p>La classe est un <strong>service</strong> : on injecte ce que l'on veut.</p>
+        <pre class="line-numbers" style="font-size: 0.8em;"><code class="language-php">final class SearchProductsTool
+{
+    public function __construct(private ProductRepository $products) {}
+
+    #[McpTool(
+        name: 'search-products',
+        description: 'Recherche des produits du catalogue par nom',
+    )]
+    public function __invoke(
+        #[Schema(description: 'Texte à chercher dans le nom', minLength: 2)]
+        string $query,
+        #[Schema(description: 'Nombre maximum de résultats', minimum: 1, maximum: 20)]
+        int $limit = 5,
+    ): array {
+        return array_map(
+            fn (Product $p) =&gt; ['id' =&gt; $p-&gt;getId(), 'name' =&gt; $p-&gt;getName(), 'price' =&gt; $p-&gt;getPrice()],
+            $this-&gt;products-&gt;search($query, $limit),
+        );
+    }
+}</code></pre>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Bonnes pratiques pour un tool</h3>
+        <ul>
+            <li>Un <strong>nom</strong> explicite et une <strong>description</strong> qui dit quand l'utiliser</li>
+            <li>Décrire chaque paramètre avec <code class="language-php">#[Schema]</code></li>
+            <li>Retourner des données <strong>compactes</strong> (le résultat consomme le contexte du modèle)</li>
+            <li>Valider les entrées : <mark>les arguments viennent d'un modèle, jamais de confiance</mark></li>
+            <li>Séparer lecture et écriture ; confirmer les actions destructrices</li>
+            <li>Lever une exception avec un message clair plutôt que renvoyer une erreur obscure</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Resources et resource templates</h3>
+        <p>Une <strong>resource</strong> expose des données identifiées par une URI :</p>
+        <pre class="line-numbers"><code class="language-php">#[McpResource(uri: 'app://about', name: 'about', mimeType: 'text/plain')]
+public function about(): string
+{
+    return 'Boutique de démonstration';
+}
+
+#[McpResourceTemplate(uriTemplate: 'product://{id}', name: 'product')]
+public function product(int $id): array
+{
+    $p = $this-&gt;products-&gt;find($id);
+    return ['uri' =&gt; "product://$id", 'mimeType' =&gt; 'text/plain', 'text' =&gt; $p?-&gt;getName() ?? ''];
+}</code></pre>
+        <p>Le <strong>template</strong> (<code>{id}</code>) couvre une famille de ressources.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Tool ou resource ?</h3>
+        <table>
+            <thead>
+                <tr><th></th><th>Resource</th><th>Tool</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Piloté par</strong></td><td>L'application / l'utilisateur</td><td>Le modèle</td></tr>
+                <tr><td><strong>Usage</strong></td><td>Joindre une donnée au contexte</td><td>Appel décidé par le modèle en cours de conversation</td></tr>
+                <tr><td><strong>Paramètres</strong></td><td>Variables d'URI (<code>{id}</code>)</td><td>Arguments validés par un schéma</td></tr>
+                <tr><td><strong>Effets de bord</strong></td><td>Aucun (lecture seule)</td><td>Possibles</td></tr>
+            </tbody>
+        </table>
+        <ul>
+            <li>Le modèle doit aller chercher la donnée lui-même ? <mark>Un tool en lecture seule</mark></li>
+            <li>L'utilisateur doit pouvoir la joindre à la conversation ? <strong>Une resource</strong></li>
+        </ul>
+        <p>⚠️ Certains clients gèrent mal les resources : le tool est le choix le plus <strong>compatible</strong>.</p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/server" target="_blank" class="info">Server features</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Prompts</h3>
+        <pre class="line-numbers"><code class="language-php">use Mcp\Capability\Attribute\McpPrompt;
+
+final class ReviewPrompts
+{
+    #[McpPrompt(name: 'review-product')]
+    public function __invoke(string $productName): array
+    {
+        return [
+            ['role' =&gt; 'user', 'content' =&gt; "Rédige une fiche produit pour : $productName"],
+        ];
+    }
+}</code></pre>
+        <p>Les prompts apparaissent chez l'utilisateur comme des <strong>commandes</strong> (ex. <code>/review-product</code> dans certains clients).</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Vérifier ce qui est exposé</h3>
+        <pre><code class="language-bash">php bin/console debug:mcp                 # tous les serveurs
+php bin/console debug:mcp --server=default
+php bin/console debug:mcp current-time    # détail + schéma d'entrée</code></pre>
+        <p>Le <strong>Profiler</strong> Symfony ajoute aussi un panneau MCP listant tools, prompts et resources.</p>
+        <p>⚠️ Si une classe n'apparaît pas : vérifiez le <code>registry</code> et que la classe est bien un <strong>service autoconfiguré</strong>.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Tester avec le MCP Inspector</h3>
+        <p>Outil officiel pour appeler son serveur sans passer par une IA :</p>
+        <pre><code class="language-bash">npx @modelcontextprotocol/inspector php bin/console mcp:server default</code></pre>
+        <p>L'interface web s'ouvre sur <code>http://localhost:6274</code> : liste des tools, formulaire d'appel, historique des messages JSON-RPC.</p>
+        <p>Pour tester en HTTP depuis le navigateur, autorisez l'origine de l'Inspector :</p>
+        <pre><code class="language-yaml">mcp:
+    servers:
+        default:
+            http:
+                allowed_origins: ['http://localhost:6274']</code></pre>
+        <footer>
+            <a href="https://modelcontextprotocol.io/docs/tools/inspector" target="_blank" class="info">MCP Inspector</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Connecter un vrai client</h3>
+        <p>Exemple avec <strong>Claude Code</strong> :</p>
+        <pre style="font-size: 0.8em;"><code class="language-bash"># Serveur local en stdio
+claude mcp add my-app -- php /chemin/vers/projet/bin/console mcp:server default
+
+# Serveur HTTP (symfony serve)
+claude mcp add --transport http my-app https://127.0.0.1:8000/mcp/default</code></pre>
+        <p>La plupart des clients (Claude Desktop, VS Code, Cursor...) se configurent avec un fichier JSON équivalent :</p>
+        <pre style="font-size: 0.8em;"><code class="language-json">{ "mcpServers": { "my-app": {
+    "command": "php", "args": ["/chemin/vers/projet/bin/console", "mcp:server", "default"] } } }</code></pre>
+    </section>
+
+    <section>
+        <h3>Sécuriser son serveur Symfony</h3>
+        <ul>
+            <li><strong>DNS rebinding</strong> : seuls <code>localhost</code> et la même origine sont acceptés ; en production, listez vos domaines dans <code>allowed_hosts</code></li>
+            <li><strong>Authentification</strong> : protégez la route avec le composant Security</li>
+        </ul>
+        <pre class="line-numbers"><code class="language-yaml"># config/packages/security.yaml
+security:
+    access_control:
+        - { path: ^/mcp, roles: ROLE_USER }</code></pre>
+        <ul>
+            <li>Plusieurs serveurs = <strong>plusieurs niveaux d'accès</strong> (<code>/mcp/editors</code>, <code>/mcp/admin</code>)</li>
+            <li>Ne jamais partager le même store de sessions entre deux serveurs</li>
+        </ul>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="warning">MCP Bundle - Sécurité</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Exercice - Un serveur MCP pour mon application</h3>
+        <p>Ajoutez un serveur MCP à votre application Symfony existante (ou à un nouveau projet) et utilisez-le depuis un assistant IA.</p>
+        <div class="instructions">
+            <ol>
+                <li>Installez <code>symfony/mcp-bundle</code>, ajoutez la route et la configuration (stdio + HTTP)</li>
+                <li>Créez le tool <code>current-time</code> et vérifiez-le avec <code>debug:mcp</code></li>
+                <li>Créez un tool <strong>lecture seule</strong> qui interroge vos entités (recherche, détail...) avec des paramètres décrits via <code class="language-php">#[Schema]</code></li>
+                <li>Ajoutez une resource ou un prompt</li>
+                <li>Testez avec le <strong>MCP Inspector</strong>, puis connectez votre serveur à Claude Code ou à votre éditeur</li>
+                <li>Bonus : protégez la route HTTP avec <code>access_control</code></li>
+            </ol>
+        </div>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+</section>
