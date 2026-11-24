@@ -207,7 +207,8 @@
 
     <section>
         <h3>Installation</h3>
-        <pre><code class="language-bash">composer require symfony/mcp-bundle</code></pre>
+        <pre><code class="language-bash">composer require symfony/mcp-bundle
+composer require nyholm/psr7   # implémentation PSR-7, requise pour le transport HTTP</code></pre>
         <p>La recette Flex crée <code>config/packages/mcp.yaml</code> et <code>config/routes/mcp.yaml</code>, qui importe les routes HTTP :</p>
         <pre class="line-numbers"><code class="language-yaml"># config/routes/mcp.yaml
 mcp:
@@ -328,6 +329,9 @@ php bin/console debug:mcp current-time    # détail + schéma d'entrée</code></
             <li>Séparer lecture et écriture ; confirmer les actions destructrices</li>
             <li>Lever une exception avec un message clair plutôt que renvoyer une erreur obscure</li>
         </ul>
+        <footer>
+            <a href="https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/servers/tools.md#parameters" target="_blank" class="info">Annotations de tool (SDK PHP)</a>
+        </footer>
     </section>
 
     <section>
@@ -339,13 +343,14 @@ public function about(): string
     return 'Boutique de démonstration';
 }
 
-#[McpResourceTemplate(uriTemplate: 'product://{id}', name: 'product')]
-public function product(int $id): array
+#[McpResourceTemplate(uriTemplate: 'product://{slug}', name: 'product', mimeType: 'application/json')]
+public function product(string $slug): array
 {
-    $p = $this-&gt;products-&gt;find($id);
-    return ['uri' =&gt; "product://$id", 'mimeType' =&gt; 'text/plain', 'text' =&gt; $p?-&gt;getName() ?? ''];
+    $p = $this-&gt;products-&gt;findOneBy(['slug' =&gt; $slug]) ?? throw new ResourceNotFoundException("product://$slug");
+
+    return ['name' =&gt; $p-&gt;getName(), 'description' =&gt; $p-&gt;getDescription(), 'price' =&gt; $p-&gt;getPrice()];
 }</code></pre>
-        <p>Le <strong>template</strong> <code>product://{id}</code> couvre une famille de ressources : une par produit (<code>product://1</code>, <code>product://42</code>...), comme une route <code>/product/{id}</code>.</p>
+        <p>Le <strong>template</strong> <code>product://{slug}</code> couvre une famille de ressources : une par produit (<code>product://guitare-folk</code>, <code>product://violon-alto</code>...), comme une route <code>/product/{slug}</code>.</p>
         <footer>
             <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
         </footer>
@@ -355,8 +360,8 @@ public function product(int $id): array
         <h3>Une resource en pratique</h3>
         <p>Un employé du marketing veut une publication Instagram pour un produit :</p>
         <ol>
-            <li>Dans son assistant (<code>@</code> dans Claude Code, « + » dans Claude Desktop), il choisit <code>product://42</code> ; le serveur peut proposer une <strong>autocomplétion</strong> de <code>{id}</code> (« gui » → les guitares du catalogue)</li>
-            <li>Le client envoie <code>resources/read</code> : Symfony appelle <code>product(42)</code> et renvoie la fiche</li>
+            <li>Dans son assistant (<code>@</code> dans Claude Code, « + » dans Claude Desktop), il choisit <code>product://guitare-folk</code> ; le serveur peut proposer une <strong>autocomplétion</strong> de <code>{slug}</code> (« gui » → <code>guitare-folk</code>, <code>guitare-electrique</code>...)</li>
+            <li>Le client envoie <code>resources/read</code> : Symfony appelle <code>product('guitare-folk')</code> et renvoie la fiche</li>
             <li>La fiche est <strong>jointe à la conversation</strong>, comme une pièce jointe</li>
             <li>Il demande : « Rédige une publication Instagram pour ce produit, avec trois hashtags »</li>
             <li>Le modèle s'appuie sur les <strong>vraies données</strong>, sans recherche ni invention</li>
@@ -364,6 +369,7 @@ public function product(int $id): array
         <p><mark>C'est l'utilisateur qui fournit le contexte : le modèle n'a rien à deviner ni à appeler.</mark></p>
         <footer>
             <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/resources" target="_blank" class="info">Resources</a>
+            <a href="https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/servers/completions.md#completion-provider-types" target="_blank" class="info">Autocomplétion (SDK PHP)</a>
         </footer>
     </section>
 
@@ -427,18 +433,77 @@ claude mcp add --transport http my-app https://127.0.0.1:8000/mcp/default</code>
         <h3>Sécuriser son serveur Symfony</h3>
         <ul>
             <li><strong>DNS rebinding</strong> : seuls <code>localhost</code> et la même origine sont acceptés ; en production, listez vos domaines dans <code>allowed_hosts</code></li>
-            <li><strong>Authentification</strong> : protégez la route avec le composant Security</li>
+            <li><strong>stdio</strong> : aucune requête HTTP, donc aucune authentification ; la confiance repose sur l'accès à la machine</li>
+            <li><strong>HTTP</strong> : le bundle s'arrête au rôle de <em>resource server</em> ; l'authentification, c'est <strong>Symfony Security</strong></li>
+            <li>Plusieurs serveurs = <strong>plusieurs niveaux d'accès</strong> (<code>/mcp/editors</code>, <code>/mcp/admin</code>)</li>
         </ul>
+        <p>⚠️ Un client MCP n'a pas de cookie de session : <code>form_login</code> ne convient pas, il faut un authenticator <strong>sans état</strong>.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html#oauth-2-1-authorization" target="_blank" class="warning">MCP Bundle - Authorization</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Authentification par access token</h3>
+        <p>Le client envoie un token dans l'en-tête <code>Authorization: Bearer &lt;token&gt;</code> :</p>
         <pre class="line-numbers"><code class="language-yaml"># config/packages/security.yaml
 security:
+    firewalls:
+        # avant le firewall "main" : le premier qui correspond est utilisé
+        mcp:
+            pattern: ^/mcp
+            stateless: true
+            access_token:
+                token_handler: App\Security\ApiTokenHandler
+        main:
+            # ...
     access_control:
         - { path: ^/mcp, roles: ROLE_USER }</code></pre>
-        <ul>
-            <li>Plusieurs serveurs = <strong>plusieurs niveaux d'accès</strong> (<code>/mcp/editors</code>, <code>/mcp/admin</code>)</li>
-            <li>Ne jamais partager le même store de sessions entre deux serveurs</li>
-        </ul>
         <footer>
-            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="warning">MCP Bundle - Sécurité</a>
+            <a href="https://symfony.com/doc/current/security/access_token.html" target="_blank" class="info">Access Token Authentication</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Authentification par access token</h3>
+        <p>Le <strong>handler</strong> retrouve l'utilisateur à partir du token :</p>
+        <pre class="line-numbers"><code class="language-php">namespace App\Security;
+
+final class ApiTokenHandler implements AccessTokenHandlerInterface
+{
+    public function __construct(private UserRepository $users) {}
+
+    public function getUserBadgeFrom(#[\SensitiveParameter] string $accessToken): UserBadge
+    {
+        $user = $this-&gt;users-&gt;findOneBy(['apiToken' =&gt; $accessToken])
+            ?? throw new BadCredentialsException('Token invalide.');
+
+        return new UserBadge($user-&gt;getUserIdentifier());
+    }
+}</code></pre>
+        <p>Dans un tool, l'utilisateur connecté s'obtient avec le service <code>Security</code> (<code>null</code> en stdio).</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/security/access_token.html" target="_blank" class="info">Access Token Authentication</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Tester l'authentification</h3>
+        <p>L'Inspector en ligne de commande permet d'ajouter un en-tête :</p>
+        <pre><code class="language-bash"># Node doit accepter le certificat local de "symfony serve"
+export NODE_USE_SYSTEM_CA=1
+
+# sans token : 401, affiché comme "auth_required" (--stored-auth-only : pas de tentative OAuth)
+npx @modelcontextprotocol/inspector --cli https://localhost:8000/mcp --transport http --method tools/list --stored-auth-only
+
+# avec token : liste des tools
+npx @modelcontextprotocol/inspector --cli https://localhost:8000/mcp --transport http --method tools/list \
+    --header "Authorization: Bearer &lt;token&gt;"</code></pre>
+        <p>⚠️ Utilisez l'URL en <code>https://</code> : l'Inspector ne suit pas la redirection depuis <code>http://</code>.</p>
+        <p>Claude ou Cursor attendent un vrai <strong>OAuth 2.1</strong> (découverte, serveur d'autorisation) : le bundle ne le fournit pas, voir API Platform ou <code>omouren/mcp-oauth-bundle</code>.</p>
+        <footer>
+            <a href="https://api-platform.com/docs/core/mcp/#securing-the-mcp-server-with-oauth2-symfony" target="_blank" class="info">API Platform - OAuth2</a>
+            <a href="https://github.com/omouren/mcp-oauth-bundle" target="_blank" class="info">mcp-oauth-bundle</a>
         </footer>
     </section>
 
@@ -452,7 +517,7 @@ security:
                 <li>Créez un tool <strong>lecture seule</strong> qui interroge vos entités (recherche, détail...) avec des paramètres décrits via <code class="language-php">#[Schema]</code></li>
                 <li>Ajoutez une resource ou un prompt</li>
                 <li>Testez avec le <strong>MCP Inspector</strong>, puis connectez votre serveur à Claude Code ou à votre éditeur</li>
-                <li>Bonus : protégez la route HTTP avec <code>access_control</code></li>
+                <li>Bonus : protégez la route HTTP avec un firewall <code>access_token</code></li>
             </ol>
         </div>
         <footer>
