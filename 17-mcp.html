@@ -64,6 +64,40 @@
     </section>
 
     <section>
+        <h3>MCP ou API REST ?</h3>
+        <table>
+            <thead>
+                <tr><th></th><th>API REST</th><th>Serveur MCP</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Consommée par</strong></td><td>Le code écrit par un développeur</td><td>Un modèle d'IA, via un client MCP</td></tr>
+                <tr><td><strong>Qui décide d'appeler</strong></td><td>Le développeur, au moment d'écrire le code</td><td>Le modèle, en cours de conversation</td></tr>
+                <tr><td><strong>Granularité</strong></td><td>Un endpoint par ressource (CRUD)</td><td>Quelques tools orientés tâche (<code>cancel_order</code>)</td></tr>
+                <tr><td><strong>Interface</strong></td><td>Ressources (URL) + verbes HTTP</td><td>Primitives : tools, resources, prompts</td></tr>
+                <tr><td><strong>Format</strong></td><td>Libre (JSON, XML...)</td><td>JSON-RPC 2.0, un endpoint unique ou stdio</td></tr>
+                <tr><td><strong>Descriptions</strong></td><td>Pour les humains</td><td>Pour le modèle : elles guident ses choix</td></tr>
+            </tbody>
+        </table>
+        <footer>
+            <a href="https://modelcontextprotocol.io/docs/getting-started/intro" target="_blank" class="info">Introduction à MCP</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>MCP ou API REST ?</h3>
+        <p>Un modèle <strong>peut</strong> utiliser une API REST via sa spec OpenAPI, mais MCP normalise :</p>
+        <ul>
+            <li>le <strong>branchement</strong> : tout client compatible se connecte à tout serveur, sans intégration spécifique</li>
+            <li>l'<strong>authentification</strong> : OAuth défini par la spécification</li>
+            <li>le <strong>contrôle humain</strong> : annotations (<code>readOnlyHint</code>, <code>destructiveHint</code>) pour demander une confirmation avant une action risquée</li>
+        </ul>
+        <p><mark>MCP ne remplace pas une API : un serveur MCP s'appuie souvent sur les mêmes services, voire enveloppe l'API existante.</mark></p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/docs/getting-started/intro" target="_blank" class="info">Introduction à MCP</a>
+        </footer>
+    </section>
+
+    <section>
         <h3>Les transports</h3>
         <p>Deux façons standard de transporter les messages :</p>
         <ul>
@@ -174,12 +208,11 @@
     <section>
         <h3>Installation</h3>
         <pre><code class="language-bash">composer require symfony/mcp-bundle</code></pre>
-        <p>Pour exposer le serveur en HTTP, ajoutez la route :</p>
-        <pre class="line-numbers"><code class="language-yaml"># config/routes.yaml
+        <p>La recette Flex crée <code>config/packages/mcp.yaml</code> et <code>config/routes/mcp.yaml</code>, qui importe les routes HTTP :</p>
+        <pre class="line-numbers"><code class="language-yaml"># config/routes/mcp.yaml
 mcp:
     resource: .
-    type: mcp</code></pre>
-        <footer>
+    type: mcp</code></pre>        <footer>
             <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
         </footer>
     </section>
@@ -192,8 +225,10 @@ mcp:
         default:
             name: 'my-app'
             transports:
-                stdio: true   # symfony console mcp:server default
-                http: true    # route /mcp/default
+                stdio: true   # php bin/console mcp:server default
+                http: true
+            http:
+                path: /mcp    # par défaut : /mcp/&lt;nom du serveur&gt;
             registry: ['App\Mcp\']</code></pre>
         <ul>
             <li><code>registry</code> est <strong>obligatoire</strong> : le serveur n'expose que ce qu'il liste (namespace, classe ou <code>*</code>)</li>
@@ -228,9 +263,37 @@ final class CurrentTimeTool
     </section>
 
     <section>
+        <h3>Vérifier ce qui est exposé</h3>
+        <pre><code class="language-bash">php bin/console debug:mcp                 # tous les serveurs
+php bin/console debug:mcp --server=default
+php bin/console debug:mcp current-time    # détail + schéma d'entrée</code></pre>
+        <p>Le <strong>Profiler</strong> Symfony ajoute aussi un panneau MCP listant tools, prompts et resources.</p>
+        <p>⚠️ Si une classe n'apparaît pas : vérifiez le <code>registry</code> et que la classe est bien un <strong>service autoconfiguré</strong>.</p>
+        <footer>
+            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Tester avec le MCP Inspector</h3>
+        <p>Outil officiel pour appeler son serveur sans passer par une IA. Ici, l'Inspector lance la commande et dialogue avec elle en <strong>stdio</strong> :</p>
+        <pre><code class="language-bash">npx @modelcontextprotocol/inspector php bin/console mcp:server default</code></pre>
+        <p>L'interface web s'ouvre sur <code>http://localhost:6274</code> : liste des tools, formulaire d'appel, historique des messages JSON-RPC.</p>
+        <p>Pour tester en HTTP depuis le navigateur, autorisez l'origine de l'Inspector :</p>
+        <pre><code class="language-yaml">mcp:
+    servers:
+        default:
+            http:
+                allowed_origins: ['http://localhost:6274']</code></pre>
+        <footer>
+            <a href="https://modelcontextprotocol.io/docs/tools/inspector" target="_blank" class="info">MCP Inspector</a>
+        </footer>
+    </section>
+
+    <section>
         <h3>Un tool métier avec injection</h3>
         <p>La classe est un <strong>service</strong> : on injecte ce que l'on veut.</p>
-        <pre class="line-numbers" style="font-size: 0.8em;"><code class="language-php">final class SearchProductsTool
+        <pre class="line-numbers" style="font-size: 0.48em;"><code class="language-php">final class SearchProductsTool
 {
     public function __construct(private ProductRepository $products) {}
 
@@ -282,9 +345,25 @@ public function product(int $id): array
     $p = $this-&gt;products-&gt;find($id);
     return ['uri' =&gt; "product://$id", 'mimeType' =&gt; 'text/plain', 'text' =&gt; $p?-&gt;getName() ?? ''];
 }</code></pre>
-        <p>Le <strong>template</strong> (<code>{id}</code>) couvre une famille de ressources.</p>
+        <p>Le <strong>template</strong> <code>product://{id}</code> couvre une famille de ressources : une par produit (<code>product://1</code>, <code>product://42</code>...), comme une route <code>/product/{id}</code>.</p>
         <footer>
             <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
+        </footer>
+    </section>
+
+    <section>
+        <h3>Une resource en pratique</h3>
+        <p>Un employé du marketing veut une publication Instagram pour un produit :</p>
+        <ol>
+            <li>Dans son assistant (<code>@</code> dans Claude Code, « + » dans Claude Desktop), il choisit <code>product://42</code> ; le serveur peut proposer une <strong>autocomplétion</strong> de <code>{id}</code> (« gui » → les guitares du catalogue)</li>
+            <li>Le client envoie <code>resources/read</code> : Symfony appelle <code>product(42)</code> et renvoie la fiche</li>
+            <li>La fiche est <strong>jointe à la conversation</strong>, comme une pièce jointe</li>
+            <li>Il demande : « Rédige une publication Instagram pour ce produit, avec trois hashtags »</li>
+            <li>Le modèle s'appuie sur les <strong>vraies données</strong>, sans recherche ni invention</li>
+        </ol>
+        <p><mark>C'est l'utilisateur qui fournit le contexte : le modèle n'a rien à deviner ni à appeler.</mark></p>
+        <footer>
+            <a href="https://modelcontextprotocol.io/specification/2026-07-28/server/resources" target="_blank" class="info">Resources</a>
         </footer>
     </section>
 
@@ -332,34 +411,6 @@ final class ReviewPrompts
     </section>
 
     <section>
-        <h3>Vérifier ce qui est exposé</h3>
-        <pre><code class="language-bash">php bin/console debug:mcp                 # tous les serveurs
-php bin/console debug:mcp --server=default
-php bin/console debug:mcp current-time    # détail + schéma d'entrée</code></pre>
-        <p>Le <strong>Profiler</strong> Symfony ajoute aussi un panneau MCP listant tools, prompts et resources.</p>
-        <p>⚠️ Si une classe n'apparaît pas : vérifiez le <code>registry</code> et que la classe est bien un <strong>service autoconfiguré</strong>.</p>
-        <footer>
-            <a href="https://symfony.com/doc/current/ai/bundles/mcp-bundle.html" target="_blank" class="info">MCP Bundle</a>
-        </footer>
-    </section>
-
-    <section>
-        <h3>Tester avec le MCP Inspector</h3>
-        <p>Outil officiel pour appeler son serveur sans passer par une IA :</p>
-        <pre><code class="language-bash">npx @modelcontextprotocol/inspector php bin/console mcp:server default</code></pre>
-        <p>L'interface web s'ouvre sur <code>http://localhost:6274</code> : liste des tools, formulaire d'appel, historique des messages JSON-RPC.</p>
-        <p>Pour tester en HTTP depuis le navigateur, autorisez l'origine de l'Inspector :</p>
-        <pre><code class="language-yaml">mcp:
-    servers:
-        default:
-            http:
-                allowed_origins: ['http://localhost:6274']</code></pre>
-        <footer>
-            <a href="https://modelcontextprotocol.io/docs/tools/inspector" target="_blank" class="info">MCP Inspector</a>
-        </footer>
-    </section>
-
-    <section>
         <h3>Connecter un vrai client</h3>
         <p>Exemple avec <strong>Claude Code</strong> :</p>
         <pre style="font-size: 0.8em;"><code class="language-bash"># Serveur local en stdio
@@ -396,7 +447,7 @@ security:
         <p>Ajoutez un serveur MCP à votre application Symfony existante (ou à un nouveau projet) et utilisez-le depuis un assistant IA.</p>
         <div class="instructions">
             <ol>
-                <li>Installez <code>symfony/mcp-bundle</code>, ajoutez la route et la configuration (stdio + HTTP)</li>
+                <li>Installez <code>symfony/mcp-bundle</code> et complétez la configuration créée par la recette (stdio + HTTP)</li>
                 <li>Créez le tool <code>current-time</code> et vérifiez-le avec <code>debug:mcp</code></li>
                 <li>Créez un tool <strong>lecture seule</strong> qui interroge vos entités (recherche, détail...) avec des paramètres décrits via <code class="language-php">#[Schema]</code></li>
                 <li>Ajoutez une resource ou un prompt</li>
