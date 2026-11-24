@@ -497,8 +497,7 @@ export NODE_USE_SYSTEM_CA=1
 npx @modelcontextprotocol/inspector --cli https://localhost:8000/mcp --transport http --method tools/list --stored-auth-only
 
 # avec token : liste des tools
-npx @modelcontextprotocol/inspector --cli https://localhost:8000/mcp --transport http --method tools/list \
-    --header "Authorization: Bearer &lt;token&gt;"</code></pre>
+npx @modelcontextprotocol/inspector --cli https://localhost:8000/mcp --transport http --method tools/list --header "Authorization: Bearer &lt;token&gt;"</code></pre>
         <p>⚠️ Utilisez l'URL en <code>https://</code> : l'Inspector ne suit pas la redirection depuis <code>http://</code>.</p>
         <p>Claude ou Cursor attendent un vrai <strong>OAuth 2.1</strong> (découverte, serveur d'autorisation) : le bundle ne le fournit pas, voir API Platform ou <code>omouren/mcp-oauth-bundle</code>.</p>
         <footer>
